@@ -9,6 +9,8 @@ export class ConversationsService {
     status?: string;
     assignedUserId?: string;
     departmentId?: string;
+    userDepartmentIds?: string[];
+    userId?: string;
     page: number;
     limit: number;
   }) {
@@ -17,6 +19,15 @@ export class ConversationsService {
     if (filters.status) where.status = filters.status;
     if (filters.assignedUserId) where.assignedUserId = filters.assignedUserId;
     if (filters.departmentId) where.departmentId = filters.departmentId;
+
+    // For non-admin users: show conversations from their departments
+    // (only after customer selected a department) OR assigned to them
+    if (filters.userDepartmentIds) {
+      where.OR = [
+        { departmentId: { in: filters.userDepartmentIds }, needsHumanAttention: true },
+        { assignedUserId: filters.userId },
+      ];
+    }
 
     const [conversations, total] = await Promise.all([
       prisma.conversation.findMany({

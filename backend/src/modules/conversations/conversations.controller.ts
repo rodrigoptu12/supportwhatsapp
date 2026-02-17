@@ -1,15 +1,32 @@
 import { Response, NextFunction } from 'express';
 import { conversationsService } from './conversations.service';
+import { prisma } from '../../shared/database/prisma.client';
 import { AuthRequest } from '../../shared/types';
 
 export class ConversationsController {
   async list(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { status, assignedUserId, departmentId, page = '1', limit = '20' } = req.query as Record<string, string>;
+      const user = req.user!;
+
+      let userDepartmentIds: string[] | undefined;
+
+      // Non-admin users only see conversations from their departments
+      // or conversations already assigned to them
+      if (user.role !== 'admin') {
+        const userDepartments = await prisma.userDepartment.findMany({
+          where: { userId: user.userId },
+          select: { departmentId: true },
+        });
+        userDepartmentIds = userDepartments.map((ud) => ud.departmentId);
+      }
+
       const result = await conversationsService.list({
         status,
         assignedUserId,
         departmentId,
+        userDepartmentIds,
+        userId: user.role !== 'admin' ? user.userId : undefined,
         page: parseInt(page, 10),
         limit: parseInt(limit, 10),
       });
