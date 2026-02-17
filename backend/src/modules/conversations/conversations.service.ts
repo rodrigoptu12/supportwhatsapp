@@ -14,19 +14,31 @@ export class ConversationsService {
     page: number;
     limit: number;
   }) {
-    const where: Record<string, unknown> = {};
+    // Build the where clause with proper Prisma typing
+    const conditions: unknown[] = [];
 
-    if (filters.status) where.status = filters.status;
-    if (filters.assignedUserId) where.assignedUserId = filters.assignedUserId;
-    if (filters.departmentId) where.departmentId = filters.departmentId;
+    if (filters.status) conditions.push({ status: filters.status });
+    if (filters.assignedUserId) conditions.push({ assignedUserId: filters.assignedUserId });
+    if (filters.departmentId) conditions.push({ departmentId: filters.departmentId });
 
     // For non-admin users: show conversations from their departments
     // (only after customer selected a department) OR assigned to them
+    let where: Record<string, unknown>;
+
     if (filters.userDepartmentIds) {
-      where.OR = [
-        { departmentId: { in: filters.userDepartmentIds }, needsHumanAttention: true },
-        { assignedUserId: filters.userId },
-      ];
+      where = {
+        AND: [
+          ...conditions,
+          {
+            OR: [
+              { departmentId: { in: filters.userDepartmentIds }, needsHumanAttention: true },
+              { assignedUserId: filters.userId },
+            ],
+          },
+        ],
+      };
+    } else {
+      where = Object.assign({}, ...conditions);
     }
 
     const [conversations, total] = await Promise.all([
