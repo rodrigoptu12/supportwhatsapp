@@ -67,6 +67,18 @@ export interface ConversationStats {
   total: number;
 }
 
+export interface Department {
+  id: string;
+  name: string;
+  description?: string;
+  isActive: boolean;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+  _count?: { users: number; conversations: number };
+  users?: Array<{ user: Pick<User, 'id' | 'fullName' | 'email' | 'role' | 'avatarUrl'> }>;
+}
+
 export interface AuthResponse {
   user: User;
   accessToken: string;
