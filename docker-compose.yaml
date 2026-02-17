@@ -46,8 +46,6 @@ services:
       RATE_LIMIT_WINDOW_MS: 60000
       RATE_LIMIT_MAX_REQUESTS: 100
       BCRYPT_ROUNDS: 12
-    ports:
-      - "3000:3000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -61,8 +59,6 @@ services:
       args:
         VITE_API_URL: https://suporte.escolamulti.com.br/api/v1
         VITE_WS_URL: https://suporte.escolamulti.com.br
-    ports:
-      - "80:80"
     depends_on:
       - backend
 
