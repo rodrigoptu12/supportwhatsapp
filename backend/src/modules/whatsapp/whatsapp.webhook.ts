@@ -77,6 +77,11 @@ export class WhatsAppWebhook {
 
       logger.info(`Message saved: ${savedMessage.id}`);
 
+      // Notify frontend in real-time about the new customer message
+      if (socketServer) {
+        socketServer.emitNewMessage(conversation.id, savedMessage);
+      }
+
       if (conversation.isBotActive) {
         const botResponse = await botService.processMessage(conversation, messageText);
 
