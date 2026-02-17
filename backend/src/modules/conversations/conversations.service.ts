@@ -5,6 +5,7 @@ export class ConversationsService {
   async list(filters: {
     status?: string;
     assignedUserId?: string;
+    departmentId?: string;
     page: number;
     limit: number;
   }) {
@@ -12,6 +13,7 @@ export class ConversationsService {
 
     if (filters.status) where.status = filters.status;
     if (filters.assignedUserId) where.assignedUserId = filters.assignedUserId;
+    if (filters.departmentId) where.departmentId = filters.departmentId;
 
     const [conversations, total] = await Promise.all([
       prisma.conversation.findMany({
@@ -22,6 +24,9 @@ export class ConversationsService {
           },
           assignedTo: {
             select: { id: true, fullName: true, avatarUrl: true },
+          },
+          department: {
+            select: { id: true, name: true },
           },
           messages: {
             orderBy: { sentAt: 'desc' },

@@ -5,10 +5,11 @@ import { AuthRequest } from '../../shared/types';
 export class ConversationsController {
   async list(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const { status, assignedUserId, page = '1', limit = '20' } = req.query as Record<string, string>;
+      const { status, assignedUserId, departmentId, page = '1', limit = '20' } = req.query as Record<string, string>;
       const result = await conversationsService.list({
         status,
         assignedUserId,
+        departmentId,
         page: parseInt(page, 10),
         limit: parseInt(limit, 10),
       });

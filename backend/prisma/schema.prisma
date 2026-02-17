@@ -23,6 +23,7 @@ model User {
   sentMessages          Message[]
   transfersFrom         ConversationTransfer[] @relation("TransferFrom")
   transfersTo           ConversationTransfer[] @relation("TransferTo")
+  departments           UserDepartment[]
 
   @@map("users")
 }
@@ -42,10 +43,39 @@ model Customer {
   @@map("customers")
 }
 
+model Department {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique @db.VarChar(255)
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  users         UserDepartment[]
+  conversations Conversation[]
+
+  @@map("departments")
+}
+
+model UserDepartment {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  departmentId String   @map("department_id") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, departmentId])
+  @@map("user_departments")
+}
+
 model Conversation {
   id                  String    @id @default(uuid()) @db.Uuid
   customerId          String    @map("customer_id") @db.Uuid
   assignedUserId      String?   @map("assigned_user_id") @db.Uuid
+  departmentId        String?   @map("department_id") @db.Uuid
   status              String    @default("open") @db.VarChar(50)
   channel             String    @default("whatsapp") @db.VarChar(50)
   currentMenuLevel    String    @default("main") @map("current_menu_level") @db.VarChar(100)
@@ -58,14 +88,16 @@ model Conversation {
   createdAt           DateTime  @default(now()) @map("created_at")
   updatedAt           DateTime  @updatedAt @map("updated_at")
 
-  customer   Customer @relation(fields: [customerId], references: [id])
-  assignedTo User?    @relation(fields: [assignedUserId], references: [id])
+  customer   Customer    @relation(fields: [customerId], references: [id])
+  assignedTo User?       @relation(fields: [assignedUserId], references: [id])
+  department Department? @relation(fields: [departmentId], references: [id])
 
   messages  Message[]
   transfers ConversationTransfer[]
 
   @@index([customerId], map: "idx_conversations_customer")
   @@index([assignedUserId], map: "idx_conversations_user")
+  @@index([departmentId], map: "idx_conversations_department")
   @@index([status], map: "idx_conversations_status")
   @@index([lastMessageAt(sort: Desc)], map: "idx_conversations_last_message")
   @@map("conversations")

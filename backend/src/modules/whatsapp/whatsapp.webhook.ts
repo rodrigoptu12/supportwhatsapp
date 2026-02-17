@@ -4,6 +4,8 @@ import { whatsappService } from './whatsapp.service';
 import { conversationsService } from '../conversations/conversations.service';
 import { messagesService } from '../messages/messages.service';
 import { botService } from '../bot/bot.service';
+import { socketServer } from '../../websocket/socket.server';
+import { SocketEvents } from '../../websocket/socket.events';
 import { logger } from '../../shared/utils/logger';
 import { prisma } from '../../shared/database/prisma.client';
 
@@ -86,6 +88,25 @@ export class WhatsAppWebhook {
             senderType: 'bot',
             content: botResponse.message,
           });
+
+          // If bot routed to a department, notify that department's attendants
+          if (botResponse.departmentId && botResponse.needsHuman) {
+            const updatedConversation = await prisma.conversation.findUnique({
+              where: { id: conversation.id },
+              include: {
+                customer: { select: { id: true, name: true, phoneNumber: true } },
+                department: { select: { id: true, name: true } },
+              },
+            });
+
+            if (updatedConversation && socketServer) {
+              socketServer.notifyDepartment(
+                botResponse.departmentId,
+                SocketEvents.NEW_CONVERSATION,
+                updatedConversation,
+              );
+            }
+          }
         }
       }
     } catch (error) {

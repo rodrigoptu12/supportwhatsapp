@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io';
 import { redis } from '../config/redis';
+import { prisma } from '../shared/database/prisma.client';
 import { logger } from '../shared/utils/logger';
 import { SocketEvents } from './socket.events';
 
@@ -27,5 +28,14 @@ export function registerSocketHandlers(socket: Socket) {
     logger.info(`User ${userId} disconnected from WebSocket`);
     await redis.del(`socket:user:${userId}`);
     await redis.srem('online:attendants', userId);
+
+    // Remove from department attendant sets
+    const userDepartments = await prisma.userDepartment.findMany({
+      where: { userId },
+      select: { departmentId: true },
+    });
+    for (const ud of userDepartments) {
+      await redis.srem(`department:${ud.departmentId}:attendants`, userId);
+    }
   });
 }

@@ -12,6 +12,8 @@ RUN npx prisma generate
 
 COPY . .
 
+RUN chmod +x docker-entrypoint.sh
+
 EXPOSE 3000
 
-CMD ["npx", "tsx", "src/server.ts"]
+CMD ["./docker-entrypoint.sh"]

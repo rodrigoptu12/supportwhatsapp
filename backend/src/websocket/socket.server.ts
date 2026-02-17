@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { env } from '../config/env';
 import { redis } from '../config/redis';
 import { logger } from '../shared/utils/logger';
+import { prisma } from '../shared/database/prisma.client';
 import { registerSocketHandlers } from './socket.handlers';
 
 export class SocketServer {
@@ -47,6 +48,15 @@ export class SocketServer {
       await redis.set(`socket:user:${userId}`, socket.id);
       await redis.sadd('online:attendants', userId);
 
+      // Store user's departments in Redis for fast lookup
+      const userDepartments = await prisma.userDepartment.findMany({
+        where: { userId },
+        select: { departmentId: true },
+      });
+      for (const ud of userDepartments) {
+        await redis.sadd(`department:${ud.departmentId}:attendants`, userId);
+      }
+
       socket.join(`user:${userId}`);
 
       registerSocketHandlers(socket);
@@ -71,6 +81,20 @@ export class SocketServer {
   async broadcastToAttendants(event: string, data: unknown) {
     const attendants = await redis.smembers('online:attendants');
     for (const userId of attendants) {
+      await this.notifyUser(userId, event, data);
+    }
+  }
+
+  async notifyDepartment(departmentId: string, event: string, data: unknown) {
+    const onlineAttendants = await redis.smembers('online:attendants');
+    const departmentAttendants = await redis.smembers(`department:${departmentId}:attendants`);
+
+    // Only notify attendants that are both online and in this department
+    const targetAttendants = departmentAttendants.filter((id) => onlineAttendants.includes(id));
+
+    logger.info(`Notifying ${targetAttendants.length} attendants in department ${departmentId}`);
+
+    for (const userId of targetAttendants) {
       await this.notifyUser(userId, event, data);
     }
   }

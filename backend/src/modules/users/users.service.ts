@@ -88,6 +88,35 @@ export class UsersService {
       },
     });
   }
+
+  async getDepartments(userId: string) {
+    await this.getById(userId);
+
+    const userDepartments = await prisma.userDepartment.findMany({
+      where: { userId },
+      include: {
+        department: true,
+      },
+    });
+
+    return userDepartments.map((ud) => ud.department);
+  }
+
+  async setDepartments(userId: string, departmentIds: string[]) {
+    await this.getById(userId);
+
+    // Remove existing associations and create new ones
+    await prisma.$transaction([
+      prisma.userDepartment.deleteMany({ where: { userId } }),
+      ...departmentIds.map((departmentId) =>
+        prisma.userDepartment.create({
+          data: { userId, departmentId },
+        }),
+      ),
+    ]);
+
+    return this.getDepartments(userId);
+  }
 }
 
 export const usersService = new UsersService();

@@ -39,6 +39,25 @@ export class UsersController {
       next(error);
     }
   }
+
+  async getDepartments(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const departments = await usersService.getDepartments(req.params.id!);
+      res.json(departments);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async setDepartments(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { departmentIds } = req.body;
+      const departments = await usersService.setDepartments(req.params.id!, departmentIds);
+      res.json(departments);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const usersController = new UsersController();

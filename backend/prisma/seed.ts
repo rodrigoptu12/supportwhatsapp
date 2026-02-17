@@ -34,6 +34,56 @@ async function main() {
   });
   console.log(`Attendant created: ${attendant.email}`);
 
+  // Create departments
+  const secretaria = await prisma.department.upsert({
+    where: { name: 'Secretaria' },
+    update: {},
+    create: {
+      name: 'Secretaria',
+      description: 'Atendimento geral e informacoes',
+      order: 1,
+    },
+  });
+  console.log(`Department created: ${secretaria.name}`);
+
+  const coordenacao = await prisma.department.upsert({
+    where: { name: 'Coordenacao' },
+    update: {},
+    create: {
+      name: 'Coordenacao',
+      description: 'Coordenacao pedagogica',
+      order: 2,
+    },
+  });
+  console.log(`Department created: ${coordenacao.name}`);
+
+  const financeiro = await prisma.department.upsert({
+    where: { name: 'Financeiro' },
+    update: {},
+    create: {
+      name: 'Financeiro',
+      description: 'Setor financeiro e cobranças',
+      order: 3,
+    },
+  });
+  console.log(`Department created: ${financeiro.name}`);
+
+  // Associate attendant to Secretaria department
+  await prisma.userDepartment.upsert({
+    where: {
+      userId_departmentId: {
+        userId: attendant.id,
+        departmentId: secretaria.id,
+      },
+    },
+    update: {},
+    create: {
+      userId: attendant.id,
+      departmentId: secretaria.id,
+    },
+  });
+  console.log(`Attendant associated to: ${secretaria.name}`);
+
   // Create bot configurations
   await prisma.botConfiguration.upsert({
     where: { key: 'welcome_message' },
@@ -41,7 +91,7 @@ async function main() {
     create: {
       key: 'welcome_message',
       value: {
-        message: 'Ola! Bem-vindo ao nosso atendimento.\n\nEscolha uma opcao:\n\n1. Suporte Tecnico\n2. Vendas\n3. Falar com Atendente',
+        message: 'Ola! Bem-vindo ao Grupo Multi Educacao.\n\n1. Falar com um setor\n\nDigite o numero da opcao:',
       },
       description: 'Welcome message for new conversations',
     },

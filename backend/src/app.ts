@@ -12,6 +12,7 @@ import { conversationsRoutes } from './modules/conversations/conversations.route
 import { messagesRoutes } from './modules/messages/messages.routes';
 import { usersRoutes } from './modules/users/users.routes';
 import { whatsappRoutes } from './modules/whatsapp/whatsapp.routes';
+import { departmentsRoutes } from './modules/departments/departments.routes';
 
 const app = express();
 
@@ -46,6 +47,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/conversations', conversationsRoutes);
 app.use('/api/v1/messages', messagesRoutes);
 app.use('/api/v1/users', usersRoutes);
+app.use('/api/v1/departments', departmentsRoutes);
 app.use('/api/v1/webhooks/whatsapp', whatsappRoutes);
 
 // 404 handler
