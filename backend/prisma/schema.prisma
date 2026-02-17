@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid()) @db.Uuid
+  email         String    @unique @db.VarChar(255)
+  passwordHash  String    @map("password_hash") @db.VarChar(255)
+  fullName      String    @map("full_name") @db.VarChar(255)
+  role          String    @default("attendant") @db.VarChar(50)
+  avatarUrl     String?   @map("avatar_url")
+  isActive      Boolean   @default(true) @map("is_active")
+  lastLoginAt   DateTime? @map("last_login_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  assignedConversations Conversation[]
+  sentMessages          Message[]
+  transfersFrom         ConversationTransfer[] @relation("TransferFrom")
+  transfersTo           ConversationTransfer[] @relation("TransferTo")
+
+  @@map("users")
+}
+
+model Customer {
+  id          String   @id @default(uuid()) @db.Uuid
+  phoneNumber String   @unique @map("phone_number") @db.VarChar(20)
+  name        String   @db.VarChar(255)
+  email       String?  @db.VarChar(255)
+  metadata    Json     @default("{}")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  conversations Conversation[]
+
+  @@index([phoneNumber], map: "idx_customers_phone")
+  @@map("customers")
+}
+
+model Conversation {
+  id                  String    @id @default(uuid()) @db.Uuid
+  customerId          String    @map("customer_id") @db.Uuid
+  assignedUserId      String?   @map("assigned_user_id") @db.Uuid
+  status              String    @default("open") @db.VarChar(50)
+  channel             String    @default("whatsapp") @db.VarChar(50)
+  currentMenuLevel    String    @default("main") @map("current_menu_level") @db.VarChar(100)
+  isBotActive         Boolean   @default(true) @map("is_bot_active")
+  needsHumanAttention Boolean   @default(false) @map("needs_human_attention")
+  metadata            Json      @default("{}")
+  startedAt           DateTime  @default(now()) @map("started_at")
+  endedAt             DateTime? @map("ended_at")
+  lastMessageAt       DateTime  @default(now()) @map("last_message_at")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  customer   Customer @relation(fields: [customerId], references: [id])
+  assignedTo User?    @relation(fields: [assignedUserId], references: [id])
+
+  messages  Message[]
+  transfers ConversationTransfer[]
+
+  @@index([customerId], map: "idx_conversations_customer")
+  @@index([assignedUserId], map: "idx_conversations_user")
+  @@index([status], map: "idx_conversations_status")
+  @@index([lastMessageAt(sort: Desc)], map: "idx_conversations_last_message")
+  @@map("conversations")
+}
+
+model Message {
+  id                String   @id @default(uuid()) @db.Uuid
+  conversationId    String   @map("conversation_id") @db.Uuid
+  senderType        String   @map("sender_type") @db.VarChar(50)
+  senderUserId      String?  @map("sender_user_id") @db.Uuid
+  content           String
+  messageType       String   @default("text") @map("message_type") @db.VarChar(50)
+  mediaUrl          String?  @map("media_url")
+  metadata          Json     @default("{}")
+  isRead            Boolean  @default(false) @map("is_read")
+  whatsappMessageId String?  @map("whatsapp_message_id") @db.VarChar(255)
+  sentAt            DateTime @default(now()) @map("sent_at")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+  senderUser   User?        @relation(fields: [senderUserId], references: [id])
+
+  @@index([conversationId], map: "idx_messages_conversation")
+  @@index([sentAt(sort: Desc)], map: "idx_messages_sent_at")
+  @@index([whatsappMessageId], map: "idx_messages_whatsapp_id")
+  @@map("messages")
+}
+
+model ConversationTransfer {
+  id             String   @id @default(uuid()) @db.Uuid
+  conversationId String   @map("conversation_id") @db.Uuid
+  fromUserId     String?  @map("from_user_id") @db.Uuid
+  toUserId       String?  @map("to_user_id") @db.Uuid
+  reason         String?
+  transferredAt  DateTime @default(now()) @map("transferred_at")
+
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+  fromUser     User?        @relation("TransferFrom", fields: [fromUserId], references: [id])
+  toUser       User?        @relation("TransferTo", fields: [toUserId], references: [id])
+
+  @@index([conversationId], map: "idx_transfers_conversation")
+  @@map("conversation_transfers")
+}
+
+model BotConfiguration {
+  id          String   @id @default(uuid()) @db.Uuid
+  key         String   @unique @db.VarChar(255)
+  value       Json
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("bot_configurations")
+}
+
+model Metric {
+  id          String   @id @default(uuid()) @db.Uuid
+  metricType  String   @map("metric_type") @db.VarChar(100)
+  metricValue Decimal  @map("metric_value") @db.Decimal(10, 2)
+  dimensions  Json     @default("{}")
+  measuredAt  DateTime @default(now()) @map("measured_at")
+
+  @@index([metricType, measuredAt(sort: Desc)], map: "idx_metrics_type_date")
+  @@map("metrics")
+}
