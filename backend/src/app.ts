@@ -16,6 +16,9 @@ import { departmentsRoutes } from './modules/departments/departments.routes';
 
 const app = express();
 
+// Trust proxy (behind nginx/Traefik in production)
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet());
 app.use(cors({
