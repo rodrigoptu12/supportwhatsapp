@@ -79,7 +79,20 @@ export class WhatsAppWebhook {
 
       // Notify frontend in real-time about the new customer message
       if (socketServer) {
+        // Emit to conversation room (for subscribers)
         socketServer.emitNewMessage(conversation.id, savedMessage);
+
+        // Also notify the assigned attendant directly (most reliable)
+        if (conversation.assignedUserId) {
+          await socketServer.notifyUser(
+            conversation.assignedUserId,
+            SocketEvents.NEW_MESSAGE,
+            savedMessage,
+          );
+        }
+
+        // Also broadcast to all online attendants so conversation list updates
+        await socketServer.broadcastToAttendants(SocketEvents.NEW_MESSAGE, savedMessage);
       }
 
       if (conversation.isBotActive) {

@@ -6,19 +6,23 @@ let socket: Socket | null = null;
 
 export const socketService = {
   connect: (token: string) => {
-    if (socket?.connected) return;
+    // Don't create duplicates - if socket exists (connected or connecting), skip
+    if (socket) return;
 
     socket = io(WS_URL, {
       auth: { token },
       transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 2000,
     });
 
     socket.on('connect', () => {
-      console.log('WebSocket connected');
+      console.log('WebSocket connected, id:', socket?.id);
     });
 
-    socket.on('disconnect', () => {
-      console.log('WebSocket disconnected');
+    socket.on('disconnect', (reason) => {
+      console.log('WebSocket disconnected:', reason);
     });
 
     socket.on('connect_error', (error) => {
@@ -27,12 +31,22 @@ export const socketService = {
   },
 
   disconnect: () => {
-    socket?.disconnect();
-    socket = null;
+    if (socket) {
+      socket.removeAllListeners();
+      socket.disconnect();
+      socket = null;
+    }
   },
 
   subscribeConversation: (conversationId: string) => {
-    socket?.emit('subscribe:conversation', conversationId);
+    if (socket?.connected) {
+      socket.emit('subscribe:conversation', conversationId);
+    } else {
+      // Wait for connection then subscribe
+      socket?.once('connect', () => {
+        socket?.emit('subscribe:conversation', conversationId);
+      });
+    }
   },
 
   unsubscribeConversation: (conversationId: string) => {
@@ -43,11 +57,11 @@ export const socketService = {
     socket?.emit('typing', conversationId);
   },
 
-  on: (event: string, callback: (data: unknown) => void) => {
+  on: (event: string, callback: (...args: unknown[]) => void) => {
     socket?.on(event, callback);
   },
 
-  off: (event: string, callback?: (data: unknown) => void) => {
+  off: (event: string, callback?: (...args: unknown[]) => void) => {
     socket?.off(event, callback);
   },
 

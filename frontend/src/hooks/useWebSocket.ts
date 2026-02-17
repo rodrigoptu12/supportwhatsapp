@@ -7,27 +7,38 @@ import { useConversationsStore } from '../store/conversationsStore';
 export function useWebSocket() {
   const { token, isAuthenticated } = useAuthStore();
   const queryClient = useQueryClient();
-  const { selectedConversation } = useConversationsStore();
+  const selectedConversation = useConversationsStore((s) => s.selectedConversation);
 
-  // Connect socket when authenticated
+  // Connect socket when authenticated (don't disconnect on cleanup - only logout does that)
   useEffect(() => {
     if (isAuthenticated && token) {
       socketService.connect(token);
     }
-    return () => {
-      socketService.disconnect();
-    };
   }, [isAuthenticated, token]);
 
-  // Subscribe to the selected conversation room and listen for new messages
+  // Subscribe to the selected conversation room
   useEffect(() => {
     if (!selectedConversation) return;
 
     const conversationId = selectedConversation.id;
     socketService.subscribeConversation(conversationId);
 
+    return () => {
+      socketService.unsubscribeConversation(conversationId);
+    };
+  }, [selectedConversation?.id]);
+
+  // Listen for real-time events
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
     const handleNewMessage = () => {
-      void queryClient.invalidateQueries({ queryKey: ['messages', conversationId] });
+      // Refresh messages for the current conversation
+      const currentId = useConversationsStore.getState().selectedConversation?.id;
+      if (currentId) {
+        void queryClient.invalidateQueries({ queryKey: ['messages', currentId] });
+      }
+      // Refresh conversation list (last message preview, order)
       void queryClient.invalidateQueries({ queryKey: ['conversations'] });
     };
 
@@ -35,26 +46,18 @@ export function useWebSocket() {
       void queryClient.invalidateQueries({ queryKey: ['conversations'] });
     };
 
-    socketService.on('new_message', handleNewMessage);
-    socketService.on('conversation_update', handleConversationUpdate);
-
-    return () => {
-      socketService.unsubscribeConversation(conversationId);
-      socketService.off('new_message', handleNewMessage);
-      socketService.off('conversation_update', handleConversationUpdate);
-    };
-  }, [selectedConversation?.id, queryClient]);
-
-  // Listen for new conversations (department notifications)
-  useEffect(() => {
     const handleNewConversation = () => {
       void queryClient.invalidateQueries({ queryKey: ['conversations'] });
     };
 
+    socketService.on('new_message', handleNewMessage);
+    socketService.on('conversation_update', handleConversationUpdate);
     socketService.on('new_conversation', handleNewConversation);
 
     return () => {
+      socketService.off('new_message', handleNewMessage);
+      socketService.off('conversation_update', handleConversationUpdate);
       socketService.off('new_conversation', handleNewConversation);
     };
-  }, [queryClient]);
+  }, [isAuthenticated, queryClient]);
 }
