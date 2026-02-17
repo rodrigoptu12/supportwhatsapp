@@ -12,4 +12,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["node", "--import", "./node_modules/dotenv/config", "node_modules/.bin/tsx", "src/server.ts"]
+CMD ["npx", "tsx", "src/server.ts"]
