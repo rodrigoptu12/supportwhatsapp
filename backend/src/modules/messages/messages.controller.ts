@@ -32,15 +32,22 @@ export class MessagesController {
         mediaUrl: req.body.mediaUrl,
       });
 
-      // Send message to customer via WhatsApp
+      // Send message to customer via WhatsApp with attendant name
       try {
         const conversation = await prisma.conversation.findUnique({
           where: { id: req.body.conversationId },
           include: { customer: { select: { phoneNumber: true } } },
         });
 
+        const attendant = await prisma.user.findUnique({
+          where: { id: req.user!.userId },
+          select: { fullName: true },
+        });
+
         if (conversation?.customer?.phoneNumber) {
-          await whatsappService.sendMessage(conversation.customer.phoneNumber, req.body.content);
+          const attendantName = attendant?.fullName ?? 'Atendente';
+          const whatsappMessage = `*${attendantName}:*\n${req.body.content}`;
+          await whatsappService.sendMessage(conversation.customer.phoneNumber, whatsappMessage);
         }
       } catch (whatsappError) {
         logger.error('Error sending message to WhatsApp:', whatsappError);

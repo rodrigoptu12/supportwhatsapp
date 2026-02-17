@@ -1,8 +1,11 @@
 import { Outlet } from 'react-router-dom';
 import { Header } from '../common/Header';
 import { Sidebar } from '../common/Sidebar';
+import { useWebSocket } from '../../hooks/useWebSocket';
 
 export function DashboardLayout() {
+  useWebSocket();
+
   return (
     <div className="h-screen flex overflow-hidden">
       <Sidebar />

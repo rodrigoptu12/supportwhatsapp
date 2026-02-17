@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 
 export function useConversations(status?: string) {
   const queryClient = useQueryClient();
-  const { setConversations } = useConversationsStore();
+  const { setConversations, selectConversation, selectedConversation } = useConversationsStore();
 
   const query = useQuery({
     queryKey: ['conversations', status],
@@ -16,6 +16,14 @@ export function useConversations(status?: string) {
   useEffect(() => {
     if (query.data) {
       setConversations(query.data.data);
+
+      // Keep selectedConversation in sync with latest data
+      if (selectedConversation) {
+        const updated = query.data.data.find((c) => c.id === selectedConversation.id);
+        if (updated) {
+          selectConversation(updated);
+        }
+      }
     }
   }, [query.data, setConversations]);
 
@@ -23,6 +31,7 @@ export function useConversations(status?: string) {
     mutationFn: conversationsApi.takeover,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      void queryClient.invalidateQueries({ queryKey: ['messages', selectedConversation?.id] });
     },
   });
 
@@ -30,6 +39,7 @@ export function useConversations(status?: string) {
     mutationFn: conversationsApi.close,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      selectConversation(null);
     },
   });
 
