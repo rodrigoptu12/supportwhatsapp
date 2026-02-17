@@ -1,4 +1,7 @@
 import { prisma } from '../../shared/database/prisma.client';
+import { whatsappService } from '../whatsapp/whatsapp.service';
+import { messagesService } from '../messages/messages.service';
+import { logger } from '../../shared/utils/logger';
 import { AppError, NotFoundError } from '../../shared/utils/errors';
 
 export class ConversationsService {
@@ -97,6 +100,11 @@ export class ConversationsService {
       throw new AppError('You already own this conversation', 400);
     }
 
+    const attendant = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { fullName: true },
+    });
+
     const updated = await prisma.conversation.update({
       where: { id: conversationId },
       data: {
@@ -114,6 +122,21 @@ export class ConversationsService {
         reason: 'Manual takeover',
       },
     });
+
+    // Notify customer via WhatsApp who is attending them
+    try {
+      const attendantName = attendant?.fullName ?? 'um atendente';
+      const msg = `Voce esta sendo atendido por *${attendantName}*. Como posso ajudar?`;
+
+      await whatsappService.sendMessage(conversation.customer.phoneNumber, msg);
+      await messagesService.create({
+        conversationId,
+        senderType: 'system',
+        content: msg,
+      });
+    } catch (error) {
+      logger.error('Error sending takeover message to WhatsApp:', error);
+    }
 
     return updated;
   }
@@ -139,9 +162,9 @@ export class ConversationsService {
   }
 
   async close(conversationId: string) {
-    await this.getById(conversationId);
+    const conversation = await this.getById(conversationId);
 
-    return prisma.conversation.update({
+    const updated = await prisma.conversation.update({
       where: { id: conversationId },
       data: {
         status: 'closed',
@@ -149,6 +172,22 @@ export class ConversationsService {
         isBotActive: false,
       },
     });
+
+    // Notify customer via WhatsApp that the conversation was closed
+    try {
+      const msg = 'Seu atendimento foi *finalizado*. Caso precise de ajuda novamente, envie uma mensagem a qualquer momento. Obrigado!';
+
+      await whatsappService.sendMessage(conversation.customer.phoneNumber, msg);
+      await messagesService.create({
+        conversationId,
+        senderType: 'system',
+        content: msg,
+      });
+    } catch (error) {
+      logger.error('Error sending close message to WhatsApp:', error);
+    }
+
+    return updated;
   }
 
   async getStats() {
