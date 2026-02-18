@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Users, Building2, Settings2 } from 'lucide-react';
+import { Users, Building2, Settings2, MessageSquare } from 'lucide-react';
 import { UsersManagement } from '../components/admin/UsersManagement';
 import { DepartmentsManagement } from '../components/admin/DepartmentsManagement';
+import { BotConfigManagement } from '../components/admin/BotConfigManagement';
 
 const tabs = [
   { id: 'users', label: 'Usuarios', icon: Users },
   { id: 'departments', label: 'Setores', icon: Building2 },
+  { id: 'bot', label: 'Bot', icon: MessageSquare },
 ] as const;
 
 type TabId = (typeof tabs)[number]['id'];
@@ -41,6 +43,7 @@ export default function Settings() {
       {/* Content */}
       {activeTab === 'users' && <UsersManagement />}
       {activeTab === 'departments' && <DepartmentsManagement />}
+      {activeTab === 'bot' && <BotConfigManagement />}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { Conversation } from '@prisma/client';
 import { prisma } from '../../shared/database/prisma.client';
 import { logger } from '../../shared/utils/logger';
+import { botConfigService } from '../bot-config/bot-config.service';
 
 interface BotResponse {
   message: string;
@@ -14,8 +15,10 @@ export class BotService {
     const menuLevel = conversation.currentMenuLevel;
     logger.info(`Bot processing: menu=${menuLevel}, text="${messageText}"`);
 
+    const configs = await botConfigService.getAll();
+
     try {
-      const response = await this.handleMenuLevel(menuLevel, messageText, conversation);
+      const response = await this.handleMenuLevel(menuLevel, messageText, conversation, configs);
 
       const updateData: Record<string, unknown> = {};
 
@@ -43,7 +46,7 @@ export class BotService {
     } catch (error) {
       logger.error('Bot processing error:', error);
       return {
-        message: 'Desculpe, ocorreu um erro. Vou transferir voce para um atendente.',
+        message: configs['error_message'] ?? 'Desculpe, ocorreu um erro. Vou transferir voce para um atendente.',
         needsHuman: true,
       };
     }
@@ -53,30 +56,35 @@ export class BotService {
     menuLevel: string,
     messageText: string,
     _conversation: Conversation,
+    configs: Record<string, string>,
   ): Promise<BotResponse> {
     switch (menuLevel) {
       case 'main':
-        return this.mainMenu(messageText);
+        return this.mainMenu(messageText, configs);
       case 'department_selection':
-        return this.departmentSelection(messageText);
+        return this.departmentSelection(messageText, configs);
       default:
-        return this.mainMenu(messageText);
+        return this.mainMenu(messageText, configs);
     }
   }
 
-  private async mainMenu(messageText: string): Promise<BotResponse> {
+  private async mainMenu(messageText: string, configs: Record<string, string>): Promise<BotResponse> {
     const option = messageText.trim();
 
     if (option === '1') {
-      return this.buildDepartmentMenu();
+      return this.buildDepartmentMenu(configs);
     }
 
+    const greeting = configs['greeting'] ?? 'Ola! Bem-vindo ao Grupo Multi Educacao.';
+    const menuOptions = configs['main_menu_options'] ?? '1. Falar com um setor';
+    const menuPrompt = configs['main_menu_prompt'] ?? 'Digite o numero da opcao:';
+
     return {
-      message: 'Ola! Bem-vindo ao Grupo Multi Educacao.\n\n1. Falar com um setor\n\nDigite o numero da opcao:',
+      message: `${greeting}\n\n${menuOptions}\n\n${menuPrompt}`,
     };
   }
 
-  private async buildDepartmentMenu(): Promise<BotResponse> {
+  private async buildDepartmentMenu(configs: Record<string, string>): Promise<BotResponse> {
     const departments = await prisma.department.findMany({
       where: { isActive: true },
       orderBy: { order: 'asc' },
@@ -84,26 +92,29 @@ export class BotService {
 
     if (departments.length === 0) {
       return {
-        message: 'No momento nao ha setores disponiveis. Voce sera atendido em breve.',
+        message: configs['no_departments'] ?? 'No momento nao ha setores disponiveis. Voce sera atendido em breve.',
         needsHuman: true,
       };
     }
+
+    const header = configs['department_menu_header'] ?? 'Escolha o setor:';
+    const prompt = configs['department_menu_prompt'] ?? 'Digite o numero:';
 
     const options = departments
       .map((dept, index) => `${index + 1}. ${dept.name}`)
       .join('\n');
 
     return {
-      message: `Escolha o setor:\n\n${options}\n\nDigite o numero:`,
+      message: `${header}\n\n${options}\n\n${prompt}`,
       nextMenuLevel: 'department_selection',
     };
   }
 
-  private async departmentSelection(messageText: string): Promise<BotResponse> {
+  private async departmentSelection(messageText: string, configs: Record<string, string>): Promise<BotResponse> {
     const option = parseInt(messageText.trim(), 10);
 
     if (isNaN(option) || option < 1) {
-      return this.buildDepartmentMenu();
+      return this.buildDepartmentMenu(configs);
     }
 
     const departments = await prisma.department.findMany({
@@ -113,13 +124,15 @@ export class BotService {
 
     const index = option - 1;
     if (index >= departments.length) {
-      return this.buildDepartmentMenu();
+      return this.buildDepartmentMenu(configs);
     }
 
     const department = departments[index]!;
+    const template = configs['department_transfer'] ?? 'Voce sera atendido pelo setor *{department}*. Aguarde um momento...';
+    const message = template.replace('{department}', department.name);
 
     return {
-      message: `Voce sera atendido pelo setor *${department.name}*. Aguarde um momento...`,
+      message,
       needsHuman: true,
       departmentId: department.id,
     };

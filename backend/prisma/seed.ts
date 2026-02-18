@@ -85,29 +85,28 @@ async function main() {
   console.log(`Attendant associated to: ${secretaria.name}`);
 
   // Create bot configurations
-  await prisma.botConfiguration.upsert({
-    where: { key: 'welcome_message' },
-    update: {},
-    create: {
-      key: 'welcome_message',
-      value: {
-        message: 'Ola! Bem-vindo ao Grupo Multi Educacao.\n\n1. Falar com um setor\n\nDigite o numero da opcao:',
-      },
-      description: 'Welcome message for new conversations',
-    },
-  });
+  const botConfigs = [
+    { key: 'greeting', value: 'Ola! Bem-vindo ao Grupo Multi Educacao.', description: 'Mensagem de boas-vindas' },
+    { key: 'main_menu_options', value: '1. Falar com um setor', description: 'Opcoes do menu principal' },
+    { key: 'main_menu_prompt', value: 'Digite o numero da opcao:', description: 'Texto pedindo input no menu principal' },
+    { key: 'department_menu_header', value: 'Escolha o setor:', description: 'Cabecalho do menu de setores' },
+    { key: 'department_menu_prompt', value: 'Digite o numero:', description: 'Texto pedindo input no menu de setores' },
+    { key: 'department_transfer', value: 'Voce sera atendido pelo setor *{department}*. Aguarde um momento...', description: 'Mensagem de transferencia ({department} = nome do setor)' },
+    { key: 'no_departments', value: 'No momento nao ha setores disponiveis. Voce sera atendido em breve.', description: 'Mensagem quando nao ha setores ativos' },
+    { key: 'error_message', value: 'Desculpe, ocorreu um erro. Vou transferir voce para um atendente.', description: 'Mensagem de erro generico' },
+  ];
 
-  await prisma.botConfiguration.upsert({
-    where: { key: 'transfer_message' },
-    update: {},
-    create: {
-      key: 'transfer_message',
-      value: {
-        message: 'Voce sera transferido para um atendente. Aguarde um momento...',
+  for (const config of botConfigs) {
+    await prisma.botConfiguration.upsert({
+      where: { key: config.key },
+      update: {},
+      create: {
+        key: config.key,
+        value: { message: config.value },
+        description: config.description,
       },
-      description: 'Message when transferring to human',
-    },
-  });
+    });
+  }
 
   console.log('Seed completed!');
 }
