@@ -33,7 +33,8 @@ export interface Conversation {
   lastMessageAt: string;
   customer: Pick<Customer, 'id' | 'name' | 'phoneNumber'>;
   assignedTo?: Pick<User, 'id' | 'fullName' | 'avatarUrl'>;
-  messages?: Array<Pick<Message, 'content' | 'sentAt' | 'senderType'>>;
+  department?: { id: string; name: string };
+  messages?: Array<Pick<Message, 'content' | 'sentAt' | 'senderType' | 'messageType'>>;
 }
 
 export interface Message {
@@ -42,7 +43,7 @@ export interface Message {
   senderType: 'customer' | 'bot' | 'attendant' | 'system';
   senderUserId?: string;
   content: string;
-  messageType: 'text' | 'image' | 'audio' | 'document';
+  messageType: 'text' | 'image' | 'audio' | 'document' | 'video';
   mediaUrl?: string;
   isRead: boolean;
   sentAt: string;

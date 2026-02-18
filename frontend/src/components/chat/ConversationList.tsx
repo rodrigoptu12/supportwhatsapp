@@ -5,8 +5,13 @@ import { LoadingSpinner } from '../common/LoadingSpinner';
 import { timeAgo, getInitials } from '../../utils/formatters';
 import type { Conversation } from '../../types';
 
-export function ConversationList() {
-  const { conversations, isLoading } = useConversations();
+interface ConversationListProps {
+  search?: string;
+  statusFilter?: string;
+}
+
+export function ConversationList({ search, statusFilter }: ConversationListProps) {
+  const { conversations, isLoading } = useConversations({ status: statusFilter, search });
   const { selectedConversation, selectConversation } = useConversationsStore();
 
   if (isLoading) {
@@ -56,7 +61,15 @@ export function ConversationList() {
                 </div>
                 {lastMessage && (
                   <p className="text-xs text-gray-500 truncate mt-1">
-                    {lastMessage.content}
+                    {lastMessage.messageType === 'image'
+                      ? '📷 Imagem'
+                      : lastMessage.messageType === 'audio'
+                        ? '🎵 Audio'
+                        : lastMessage.messageType === 'video'
+                          ? '🎥 Video'
+                          : lastMessage.messageType === 'document'
+                            ? '📄 Documento'
+                            : lastMessage.content}
                   </p>
                 )}
                 <div className="flex items-center gap-2 mt-1">

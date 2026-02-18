@@ -2,7 +2,7 @@ import { api } from './api';
 import type { Conversation, ConversationStats, PaginatedResponse } from '../types';
 
 export const conversationsApi = {
-  list: async (params?: { status?: string; page?: number; limit?: number }): Promise<PaginatedResponse<Conversation>> => {
+  list: async (params?: { status?: string; search?: string; page?: number; limit?: number }): Promise<PaginatedResponse<Conversation>> => {
     const { data } = await api.get<PaginatedResponse<Conversation>>('/conversations', { params });
     return data;
   },

@@ -3,13 +3,13 @@ import { conversationsApi } from '../services/conversations.service';
 import { useConversationsStore } from '../store/conversationsStore';
 import { useEffect } from 'react';
 
-export function useConversations(status?: string) {
+export function useConversations(filters?: { status?: string; search?: string }) {
   const queryClient = useQueryClient();
   const { setConversations, selectConversation, selectedConversation } = useConversationsStore();
 
   const query = useQuery({
-    queryKey: ['conversations', status],
-    queryFn: () => conversationsApi.list({ status }),
+    queryKey: ['conversations', filters?.status, filters?.search],
+    queryFn: () => conversationsApi.list({ status: filters?.status, search: filters?.search }),
     refetchInterval: 30000,
   });
 

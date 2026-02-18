@@ -9,6 +9,7 @@ export class ConversationsService {
     status?: string;
     assignedUserId?: string;
     departmentId?: string;
+    search?: string;
     userDepartmentIds?: string[];
     userId?: string;
     page: number;
@@ -20,6 +21,16 @@ export class ConversationsService {
     if (filters.status) conditions.push({ status: filters.status });
     if (filters.assignedUserId) conditions.push({ assignedUserId: filters.assignedUserId });
     if (filters.departmentId) conditions.push({ departmentId: filters.departmentId });
+
+    if (filters.search) {
+      conditions.push({
+        OR: [
+          { customer: { name: { contains: filters.search, mode: 'insensitive' } } },
+          { customer: { phoneNumber: { contains: filters.search } } },
+          { messages: { some: { content: { contains: filters.search, mode: 'insensitive' } } } },
+        ],
+      });
+    }
 
     // For non-admin users: show conversations from their departments
     // (only after customer selected a department) OR assigned to them
@@ -57,7 +68,7 @@ export class ConversationsService {
           messages: {
             orderBy: { sentAt: 'desc' },
             take: 1,
-            select: { content: true, sentAt: true, senderType: true },
+            select: { content: true, sentAt: true, senderType: true, messageType: true },
           },
         },
         orderBy: { lastMessageAt: 'desc' },

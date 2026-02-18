@@ -6,7 +6,7 @@ import { AuthRequest } from '../../shared/types';
 export class ConversationsController {
   async list(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const { status, assignedUserId, departmentId, page = '1', limit = '20' } = req.query as Record<string, string>;
+      const { status, assignedUserId, departmentId, search, page = '1', limit = '20' } = req.query as Record<string, string>;
       const user = req.user!;
 
       let userDepartmentIds: string[] | undefined;
@@ -25,6 +25,7 @@ export class ConversationsController {
         status,
         assignedUserId,
         departmentId,
+        search,
         userDepartmentIds,
         userId: user.role !== 'admin' ? user.userId : undefined,
         page: parseInt(page, 10),

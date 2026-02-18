@@ -4,6 +4,7 @@ export const listConversationsSchema = z.object({
   query: z.object({
     status: z.enum(['open', 'closed', 'waiting']).optional(),
     assignedUserId: z.string().uuid().optional(),
+    search: z.string().optional(),
     page: z.coerce.number().min(1).default(1),
     limit: z.coerce.number().min(1).max(100).default(20),
   }),
