@@ -4,6 +4,14 @@ import { AppError } from '@/shared/utils/errors';
 import { whatsappService } from '@/modules/whatsapp/whatsapp.service';
 import { messagesService } from '@/modules/messages/messages.service';
 
+jest.mock('@/websocket/socket.server', () => ({
+  socketServer: {
+    emitNewMessage: jest.fn(),
+    notifyUser: jest.fn().mockResolvedValue(undefined),
+    emitConversationUpdate: jest.fn(),
+  },
+}));
+
 const service = new ConversationsService();
 
 beforeEach(() => {
@@ -134,6 +142,9 @@ describe('ConversationsService', () => {
   describe('transfer', () => {
     it('transfers conversation and creates transfer record', async () => {
       prismaMock.conversation.findUnique.mockResolvedValue(fakeConversation);
+      prismaMock.user.findUnique
+        .mockResolvedValueOnce({ fullName: 'Agent 1' })
+        .mockResolvedValueOnce({ fullName: 'Agent 2' });
       const updated = { ...fakeConversation, assignedUserId: 'user-2' };
       prismaMock.conversation.update.mockResolvedValue(updated);
       prismaMock.conversationTransfer.create.mockResolvedValue({});
@@ -153,6 +164,13 @@ describe('ConversationsService', () => {
           reason: 'needs specialist',
         },
       });
+      expect(messagesService.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          conversationId: 'conv-1',
+          senderType: 'system',
+          content: expect.stringContaining('needs specialist'),
+        }),
+      );
     });
 
     it('throws NotFoundError for non-existent conversation', async () => {
@@ -171,6 +189,12 @@ describe('ConversationsService', () => {
       expect(prismaMock.conversationTransfer.create).toHaveBeenCalledWith({
         data: expect.objectContaining({ reason: undefined }),
       });
+      expect(messagesService.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          senderType: 'system',
+          content: expect.not.stringContaining('Motivo'),
+        }),
+      );
     });
   });
 

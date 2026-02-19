@@ -3,6 +3,8 @@ import { whatsappService } from '../whatsapp/whatsapp.service';
 import { messagesService } from '../messages/messages.service';
 import { logger } from '../../shared/utils/logger';
 import { AppError, NotFoundError } from '../../shared/utils/errors';
+import { socketServer } from '../../websocket/socket.server';
+import { SocketEvents } from '../../websocket/socket.events';
 
 export class ConversationsService {
   async list(filters: {
@@ -178,6 +180,11 @@ export class ConversationsService {
   async transfer(conversationId: string, fromUserId: string, toUserId: string, reason?: string) {
     await this.getById(conversationId);
 
+    const [fromUser, toUser] = await Promise.all([
+      prisma.user.findUnique({ where: { id: fromUserId }, select: { fullName: true } }),
+      prisma.user.findUnique({ where: { id: toUserId }, select: { fullName: true } }),
+    ]);
+
     const updated = await prisma.conversation.update({
       where: { id: conversationId },
       data: { assignedUserId: toUserId },
@@ -191,6 +198,29 @@ export class ConversationsService {
         reason,
       },
     });
+
+    // Create a system message with transfer details (stored in DB only, not sent to WhatsApp)
+    const fromName = fromUser?.fullName ?? 'Atendente';
+    const toName = toUser?.fullName ?? 'Atendente';
+    const msgContent = reason
+      ? `Conversa transferida de ${fromName} para ${toName}. Motivo: ${reason}`
+      : `Conversa transferida de ${fromName} para ${toName}.`;
+
+    const systemMessage = await messagesService.create({
+      conversationId,
+      senderType: 'system',
+      content: msgContent,
+    });
+
+    // Emit new_message to the conversation room so the system message appears in real-time
+    socketServer.emitNewMessage(conversationId, systemMessage);
+
+    // Notify both attendants so their conversation lists update in real-time
+    const eventData = { conversationId, assignedUserId: toUserId };
+    await Promise.all([
+      socketServer.notifyUser(fromUserId, SocketEvents.CONVERSATION_UPDATE, eventData),
+      socketServer.notifyUser(toUserId, SocketEvents.CONVERSATION_UPDATE, eventData),
+    ]);
 
     return updated;
   }
