@@ -20,7 +20,7 @@ test.describe('Login', () => {
     await page.getByRole('button', { name: 'Entrar' }).click();
 
     await expect(page).toHaveURL('/');
-    await expect(page.getByText('Dashboard')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
   });
 
   test('login as attendant redirects to dashboard', async ({ page }) => {
@@ -29,7 +29,7 @@ test.describe('Login', () => {
     await page.getByRole('button', { name: 'Entrar' }).click();
 
     await expect(page).toHaveURL('/');
-    await expect(page.getByText('Dashboard')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
   });
 
   test('invalid credentials shows error message', async ({ page }) => {

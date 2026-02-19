@@ -5,7 +5,7 @@ test.describe('Conversations', () => {
     await adminPage.goto('/conversations');
     await adminPage.waitForLoadState('networkidle');
 
-    await expect(adminPage.getByText('Conversas')).toBeVisible();
+    await expect(adminPage.getByRole('heading', { name: 'Conversas' })).toBeVisible();
     await expect(
       adminPage.getByPlaceholder('Buscar por nome, telefone ou mensagem...'),
     ).toBeVisible();

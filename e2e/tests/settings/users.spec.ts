@@ -9,16 +9,16 @@ test.describe('Users Management', () => {
   });
 
   test('lists users with their roles', async ({ adminPage }) => {
-    await expect(adminPage.getByText(TEST_USERS.admin.fullName)).toBeVisible();
-    await expect(adminPage.getByText(TEST_USERS.attendant.fullName)).toBeVisible();
-    await expect(adminPage.getByText('Admin')).toBeVisible();
-    await expect(adminPage.getByText('Atendente')).toBeVisible();
+    await expect(adminPage.getByRole('cell', { name: TEST_USERS.admin.fullName })).toBeVisible();
+    await expect(adminPage.getByRole('cell', { name: TEST_USERS.attendant.fullName })).toBeVisible();
+    await expect(adminPage.getByText('Admin', { exact: true })).toBeVisible();
+    await expect(adminPage.getByText('Atendente', { exact: true })).toBeVisible();
   });
 
   test('opens department assignment modal for a user', async ({ adminPage }) => {
     // Click "Setores" button for the attendant
     const attendantRow = adminPage.getByText(TEST_USERS.attendant.fullName).locator('..');
-    await attendantRow.locator('..').getByRole('button', { name: 'Setores' }).click();
+    await attendantRow.getByRole('button', { name: 'Setores' }).click();
 
     await expect(
       adminPage.getByText(`Setores de ${TEST_USERS.attendant.fullName}`),
@@ -27,7 +27,7 @@ test.describe('Users Management', () => {
 
   test('saves department assignment', async ({ adminPage }) => {
     const attendantRow = adminPage.getByText(TEST_USERS.attendant.fullName).locator('..');
-    await attendantRow.locator('..').getByRole('button', { name: 'Setores' }).click();
+    await attendantRow.getByRole('button', { name: 'Setores' }).click();
 
     await expect(
       adminPage.getByText(`Setores de ${TEST_USERS.attendant.fullName}`),

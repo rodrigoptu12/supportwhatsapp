@@ -9,10 +9,10 @@ test.describe('Bot Configuration', () => {
   });
 
   test('shows bot configuration entries', async ({ adminPage }) => {
-    await expect(adminPage.getByText('Boas-vindas')).toBeVisible();
-    await expect(adminPage.getByText('Opcoes do Menu')).toBeVisible();
-    await expect(adminPage.getByText('Transferencia')).toBeVisible();
-    await expect(adminPage.getByText('Erro Generico')).toBeVisible();
+    await expect(adminPage.getByText('Boas-vindas', { exact: true })).toBeVisible();
+    await expect(adminPage.getByText('Opcoes do Menu', { exact: true })).toBeVisible();
+    await expect(adminPage.getByText('Transferencia', { exact: true })).toBeVisible();
+    await expect(adminPage.getByText('Erro Generico', { exact: true })).toBeVisible();
   });
 
   test('edits a bot configuration value', async ({ adminPage }) => {

@@ -5,13 +5,13 @@ test.describe('Departments Management', () => {
   test.beforeEach(async ({ adminPage }) => {
     await adminPage.goto('/settings');
     await adminPage.waitForLoadState('networkidle');
-    await adminPage.getByText('Setores').click();
+    await adminPage.getByRole('button', { name: 'Setores' }).first().click();
     await adminPage.waitForLoadState('networkidle');
   });
 
   test('shows seed departments', async ({ adminPage }) => {
     for (const dept of DEPARTMENTS) {
-      await expect(adminPage.getByText(dept)).toBeVisible();
+      await expect(adminPage.getByText(dept, { exact: true })).toBeVisible();
     }
   });
 
@@ -41,11 +41,10 @@ test.describe('Departments Management', () => {
     // Accept the confirmation dialog
     adminPage.on('dialog', (dialog) => dialog.accept());
 
-    // Click delete on the last row (the one we just created)
-    const rows = adminPage.locator('table tbody tr');
-    const lastRow = rows.last();
-    await lastRow.locator('button').last().click();
+    // Click delete button on the row containing "Setor Para Deletar"
+    const rowToDelete = adminPage.getByText('Setor Para Deletar', { exact: true }).locator('..');
+    await rowToDelete.locator('button').last().click();
 
-    await expect(adminPage.getByText('Setor Para Deletar')).not.toBeVisible();
+    await expect(adminPage.getByText('Setor Para Deletar', { exact: true })).not.toBeVisible();
   });
 });
