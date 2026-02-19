@@ -62,6 +62,23 @@ export class WhatsAppService {
     }
   }
 
+  async getMediaUrl(mediaId: string): Promise<string> {
+    try {
+      const response = await axios.get(
+        `https://graph.facebook.com/v21.0/${mediaId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.accessToken}`,
+          },
+        },
+      );
+      return response.data.url as string;
+    } catch (error) {
+      logger.error('Error getting media URL:', error);
+      throw error;
+    }
+  }
+
   async markAsRead(messageId: string) {
     try {
       await axios.post(

@@ -50,14 +50,22 @@ export function useWebSocket() {
       void queryClient.invalidateQueries({ queryKey: ['conversations'] });
     };
 
+    const handleOnlineStatusChange = () => {
+      void queryClient.invalidateQueries({ queryKey: ['online-users'] });
+    };
+
     socketService.on('new_message', handleNewMessage);
     socketService.on('conversation_update', handleConversationUpdate);
     socketService.on('new_conversation', handleNewConversation);
+    socketService.on('attendant_online', handleOnlineStatusChange);
+    socketService.on('attendant_offline', handleOnlineStatusChange);
 
     return () => {
       socketService.off('new_message', handleNewMessage);
       socketService.off('conversation_update', handleConversationUpdate);
       socketService.off('new_conversation', handleNewConversation);
+      socketService.off('attendant_online', handleOnlineStatusChange);
+      socketService.off('attendant_offline', handleOnlineStatusChange);
     };
   }, [isAuthenticated, queryClient]);
 }

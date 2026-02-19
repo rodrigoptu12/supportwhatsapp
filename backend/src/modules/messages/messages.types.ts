@@ -12,7 +12,7 @@ export const createMessageSchema = z.object({
   body: z.object({
     conversationId: z.string().uuid(),
     content: z.string().min(1),
-    messageType: z.enum(['text', 'image', 'audio', 'document']).default('text'),
+    messageType: z.enum(['text', 'image', 'audio', 'document', 'video']).default('text'),
     mediaUrl: z.string().url().optional(),
   }),
 });

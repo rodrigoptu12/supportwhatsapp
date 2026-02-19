@@ -2,6 +2,11 @@ import { api } from './api';
 import type { User, PaginatedResponse, Department } from '../types';
 
 export const usersApi = {
+  getOnline: async (): Promise<Array<Pick<User, 'id' | 'fullName' | 'avatarUrl' | 'role'>>> => {
+    const { data } = await api.get<Array<Pick<User, 'id' | 'fullName' | 'avatarUrl' | 'role'>>>('/users/online');
+    return data;
+  },
+
   list: async (page = 1, limit = 50): Promise<PaginatedResponse<User>> => {
     const { data } = await api.get<PaginatedResponse<User>>('/users', { params: { page, limit } });
     return data;

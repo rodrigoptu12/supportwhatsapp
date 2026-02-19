@@ -49,16 +49,50 @@ export class WhatsAppWebhook {
     }
   }
 
-  private async processMessage(data: { messages?: Array<{ from: string; text?: { body: string }; id: string }>; contacts?: Array<{ profile?: { name: string } }> }) {
+  private async processMessage(data: {
+    messages?: Array<{
+      from: string;
+      id: string;
+      type: string;
+      text?: { body: string };
+      image?: { id: string; mime_type: string; caption?: string };
+      audio?: { id: string; mime_type: string };
+      video?: { id: string; mime_type: string; caption?: string };
+      document?: { id: string; mime_type: string; filename?: string; caption?: string };
+    }>;
+    contacts?: Array<{ profile?: { name: string } }>;
+  }) {
     const messages = data.messages;
     if (!messages || messages.length === 0) return;
 
     const message = messages[0]!;
     const phoneNumber = message.from;
-    const messageText = message.text?.body ?? '';
     const messageId = message.id;
+    const messageType = message.type as 'text' | 'image' | 'audio' | 'video' | 'document';
 
-    logger.info(`Message received from ${phoneNumber}: ${messageText}`);
+    let content = '';
+    let mediaUrl: string | undefined;
+
+    if (messageType === 'text') {
+      content = message.text?.body ?? '';
+    } else if (['image', 'audio', 'video', 'document'].includes(messageType)) {
+      const mediaData = message[messageType as 'image' | 'audio' | 'video' | 'document'];
+      if (mediaData) {
+        try {
+          mediaUrl = await whatsappService.getMediaUrl(mediaData.id);
+        } catch (error) {
+          logger.error(`Failed to get media URL for ${messageType}:`, error);
+        }
+        const caption = 'caption' in mediaData ? mediaData.caption : undefined;
+        const filename = 'filename' in mediaData ? (mediaData as { filename?: string }).filename : undefined;
+        content = caption || filename || `[${messageType}]`;
+      }
+    } else {
+      // Unsupported message type (sticker, location, etc.)
+      content = `[${messageType}]`;
+    }
+
+    logger.info(`Message received from ${phoneNumber} (${messageType}): ${content}`);
 
     try {
       const customer = await this.getOrCreateCustomer(
@@ -71,7 +105,9 @@ export class WhatsAppWebhook {
       const savedMessage = await messagesService.create({
         conversationId: conversation.id,
         senderType: 'customer',
-        content: messageText,
+        content,
+        messageType: ['text', 'image', 'audio', 'video', 'document'].includes(messageType) ? messageType : 'text',
+        mediaUrl,
         whatsappMessageId: messageId,
       });
 
@@ -96,7 +132,7 @@ export class WhatsAppWebhook {
       }
 
       if (conversation.isBotActive) {
-        const botResponse = await botService.processMessage(conversation, messageText);
+        const botResponse = await botService.processMessage(conversation, content);
 
         if (botResponse) {
           await whatsappService.sendMessage(phoneNumber, botResponse.message);

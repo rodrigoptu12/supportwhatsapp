@@ -2253,3 +2253,28 @@ Este documento fornece um **blueprint completo** para construir um sistema profi
 5. **Iniciar** desenvolvimento!
 
 Bom desenvolvimento! 🚀
+Prioridade Alta
+
+  1. Bot Config API — GET/PUT /api/v1/bot/config, GET /api/v1/bot/flows — configurar mensagens do bot pelo painel sem
+  mexer no código
+  2. Métricas/Dashboard — GET /api/v1/metrics/overview, /metrics/attendance, /metrics/export — a página Metrics no
+  frontend é placeholder, sem dados reais
+  3. Suporte a mídia — o sistema só trata mensagens de texto. A doc prevê imagens, áudio, documentos e vídeo via
+  WhatsApp
+  4. Status online/offline dos atendentes visível no frontend (Redis já rastreia, mas o frontend não exibe)
+
+  Prioridade Média
+
+  5. Integração OpenAI/IA — bot.ai.ts existe como stub mas não está conectado ao fluxo do bot com departamentos
+  6. Busca e filtros avançados na lista de conversas (por nome do cliente, data, texto)
+  7. Edição de perfil do usuário no frontend (trocar nome, avatar, senha)
+  8. Exportação de relatórios — CSV/PDF das métricas e atendimentos
+  9. Fila de mensagens (Bull/BullMQ) — dependência existe no package.json mas não é usada para processamento assíncrono
+
+  Prioridade Baixa
+
+  10. Testes — Jest configurado mas nenhum teste escrito (unitários, integração, e2e)
+  11. CI/CD — sem GitHub Actions ou pipeline de deploy automatizado
+  12. Monitoramento — sem Sentry (erros), Prometheus/Grafana (métricas de infra)
+  13. Rate limiting granular — existe básico mas a doc prevê limites por endpoint
+  14. Auditoria/logs — logging existe mas sem trail de auditoria estruturado

@@ -43,6 +43,14 @@ export function useConversations(filters?: { status?: string; search?: string })
     },
   });
 
+  const transferMutation = useMutation({
+    mutationFn: ({ id, toUserId, reason }: { id: string; toUserId: string; reason?: string }) =>
+      conversationsApi.transfer(id, toUserId, reason),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['conversations'] });
+    },
+  });
+
   return {
     conversations: query.data?.data ?? [],
     pagination: query.data?.pagination,
@@ -50,6 +58,7 @@ export function useConversations(filters?: { status?: string; search?: string })
     error: query.error,
     takeover: takeoverMutation.mutateAsync,
     closeConversation: closeMutation.mutateAsync,
+    transfer: transferMutation.mutateAsync,
     refetch: query.refetch,
   };
 }

@@ -37,5 +37,8 @@ export function registerSocketHandlers(socket: Socket) {
     for (const ud of userDepartments) {
       await redis.srem(`department:${ud.departmentId}:attendants`, userId);
     }
+
+    // Broadcast offline status to all remaining connected clients
+    socket.broadcast.emit(SocketEvents.ATTENDANT_OFFLINE, { userId });
   });
 }

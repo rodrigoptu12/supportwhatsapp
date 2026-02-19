@@ -6,6 +6,7 @@ import { redis } from '../config/redis';
 import { logger } from '../shared/utils/logger';
 import { prisma } from '../shared/database/prisma.client';
 import { registerSocketHandlers } from './socket.handlers';
+import { SocketEvents } from './socket.events';
 
 export class SocketServer {
   private io: SocketIOServer;
@@ -58,6 +59,19 @@ export class SocketServer {
       }
 
       socket.join(`user:${userId}`);
+
+      // Fetch user info and broadcast online status
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { fullName: true, role: true },
+      });
+      if (user) {
+        await this.broadcastToAttendants(SocketEvents.ATTENDANT_ONLINE, {
+          userId,
+          fullName: user.fullName,
+          role: user.role,
+        });
+      }
 
       registerSocketHandlers(socket);
     });

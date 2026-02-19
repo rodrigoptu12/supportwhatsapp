@@ -1,9 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMessages } from '../../hooks/useMessages';
 import { useConversationsStore } from '../../store/conversationsStore';
 import { useConversations } from '../../hooks/useConversations';
+import { useAuthStore } from '../../store/authStore';
 import { MessageBubble } from './MessageBubble';
 import { MessageInput } from './MessageInput';
+import { TransferDialog } from './TransferDialog';
 import { Button } from '../ui/button';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import { formatPhone } from '../../utils/formatters';
@@ -12,8 +14,10 @@ import { MessageSquare } from 'lucide-react';
 export function ChatWindow() {
   const { selectedConversation } = useConversationsStore();
   const { messages, isLoading, sendMessage } = useMessages(selectedConversation?.id ?? null);
-  const { takeover, closeConversation } = useConversations();
+  const { takeover, closeConversation, transfer } = useConversations();
+  const { user } = useAuthStore();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [showTransferDialog, setShowTransferDialog] = useState(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -58,9 +62,14 @@ export function ChatWindow() {
               Assumir Atendimento
             </Button>
           ) : (
-            <Button size="sm" variant="destructive" onClick={handleClose}>
-              Finalizar
-            </Button>
+            <>
+              <Button size="sm" variant="outline" onClick={() => setShowTransferDialog(true)}>
+                Transferir
+              </Button>
+              <Button size="sm" variant="destructive" onClick={handleClose}>
+                Finalizar
+              </Button>
+            </>
           )}
         </div>
       </div>
@@ -91,6 +100,15 @@ export function ChatWindow() {
           }
         />
       </div>
+      <TransferDialog
+        open={showTransferDialog}
+        onClose={() => setShowTransferDialog(false)}
+        currentUserId={user?.id ?? ''}
+        onTransfer={async (toUserId, reason) => {
+          await transfer({ id: selectedConversation.id, toUserId, reason });
+          setShowTransferDialog(false);
+        }}
+      />
     </div>
   );
 }
