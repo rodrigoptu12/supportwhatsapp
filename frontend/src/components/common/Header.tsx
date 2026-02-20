@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useOnlineUsers } from '../../hooks/useOnlineUsers';
 import { Button } from '../ui/button';
@@ -21,54 +21,90 @@ export function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const avatarColors = [
+    'bg-violet-500',
+    'bg-blue-500',
+    'bg-amber-500',
+    'bg-rose-500',
+    'bg-teal-500',
+  ];
+
+  const getAvatarColor = (id: string) => {
+    const index = id.charCodeAt(0) % avatarColors.length;
+    return avatarColors[index];
+  };
+
   return (
-    <header className="h-14 border-b bg-white flex items-center justify-between px-6">
+    <header className="h-14 bg-white flex items-center justify-between px-6 shrink-0" style={{ borderBottom: '1px solid #f1f5f9' }}>
+      {/* Left: title placeholder for page context */}
+      <div />
+
+      {/* Right: controls */}
       <div className="flex items-center gap-3">
-        <h1 className="text-lg font-semibold text-gray-900">WhatsApp Support</h1>
-      </div>
-      <div className="flex items-center gap-4">
+        {/* Online users */}
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setShowDropdown(!showDropdown)}
-            className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+            className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 transition-colors px-3 py-1.5 rounded-lg hover:bg-slate-50"
           >
-            <span className="w-2 h-2 rounded-full bg-green-500" />
-            <span>{onlineCount} online</span>
+            <span className="flex items-center gap-1.5">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
+              <span className="font-medium">{onlineCount} online</span>
+            </span>
+            <ChevronDown size={13} className={`transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
           </button>
+
           {showDropdown && (
-            <div className="absolute right-0 top-full mt-2 w-56 bg-white border rounded-lg shadow-lg z-50 py-2">
-              <p className="px-3 py-1.5 text-xs font-medium text-gray-400 uppercase">
+            <div className="absolute right-0 top-full mt-2 w-60 bg-white rounded-xl shadow-card-hover border border-slate-100 z-50 py-2 animate-fade-in">
+              <p className="px-4 py-2 text-[10px] font-bold tracking-widest uppercase text-slate-400">
                 Atendentes online
               </p>
               {onlineUsers.length === 0 ? (
-                <p className="px-3 py-2 text-sm text-gray-500">Nenhum atendente online</p>
+                <p className="px-4 py-2 text-sm text-slate-400">Nenhum atendente online</p>
               ) : (
                 onlineUsers.map((u) => (
-                  <div key={u.id} className="flex items-center gap-2 px-3 py-1.5">
-                    <div className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-medium shrink-0">
+                  <div key={u.id} className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 transition-colors">
+                    <div className={`w-8 h-8 rounded-full ${getAvatarColor(u.id)} text-white flex items-center justify-center text-xs font-semibold shrink-0`}>
                       {getInitials(u.fullName)}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">{u.fullName}</p>
-                      <p className="text-xs text-gray-400 capitalize">{u.role}</p>
+                      <p className="text-sm font-medium text-slate-800 truncate">{u.fullName}</p>
+                      <p className="text-xs text-slate-400 capitalize">{u.role}</p>
                     </div>
+                    <span className="ml-auto w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
                   </div>
                 ))
               )}
             </div>
           )}
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
-            {user ? getInitials(user.fullName) : <User size={16} />}
+
+        {/* Divider */}
+        <div className="w-px h-5 bg-slate-100" />
+
+        {/* User */}
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold shadow-sm">
+            {user ? getInitials(user.fullName) : '?'}
           </div>
-          <div className="text-sm">
-            <p className="font-medium">{user?.fullName}</p>
-            <p className="text-gray-500 text-xs capitalize">{user?.role}</p>
+          <div className="text-sm leading-tight hidden sm:block">
+            <p className="font-semibold text-slate-800">{user?.fullName}</p>
+            <p className="text-slate-400 text-xs capitalize">{user?.role}</p>
           </div>
         </div>
-        <Button variant="ghost" size="icon" onClick={logout} title="Sair">
-          <LogOut size={18} />
+
+        {/* Logout */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={logout}
+          title="Sair"
+          className="text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+        >
+          <LogOut size={16} />
         </Button>
       </div>
     </header>

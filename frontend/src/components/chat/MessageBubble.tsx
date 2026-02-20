@@ -10,7 +10,7 @@ function MediaContent({ message }: { message: Message }) {
   const { messageType, mediaUrl, content } = message;
 
   if (!mediaUrl || messageType === 'text') {
-    return <p className="text-sm whitespace-pre-wrap break-words">{content}</p>;
+    return <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">{content}</p>;
   }
 
   switch (messageType) {
@@ -21,18 +21,18 @@ function MediaContent({ message }: { message: Message }) {
             <img
               src={mediaUrl}
               alt={content || 'Imagem'}
-              className="max-w-full rounded cursor-pointer"
+              className="max-w-full rounded-lg cursor-pointer hover:opacity-95 transition-opacity"
             />
           </a>
           {content && content !== '[image]' && (
-            <p className="text-sm mt-1 whitespace-pre-wrap break-words">{content}</p>
+            <p className="text-sm mt-2 whitespace-pre-wrap break-words">{content}</p>
           )}
         </div>
       );
     case 'audio':
       return (
         <div>
-          <audio controls src={mediaUrl} className="max-w-full" />
+          <audio controls src={mediaUrl} className="max-w-full" style={{ height: '36px' }} />
           {content && content !== '[audio]' && (
             <p className="text-sm mt-1 whitespace-pre-wrap break-words">{content}</p>
           )}
@@ -41,7 +41,7 @@ function MediaContent({ message }: { message: Message }) {
     case 'video':
       return (
         <div>
-          <video controls src={mediaUrl} className="max-w-full rounded" />
+          <video controls src={mediaUrl} className="max-w-full rounded-lg" />
           {content && content !== '[video]' && (
             <p className="text-sm mt-1 whitespace-pre-wrap break-words">{content}</p>
           )}
@@ -54,9 +54,9 @@ function MediaContent({ message }: { message: Message }) {
             href={mediaUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 text-sm underline"
+            className="flex items-center gap-2 text-sm underline underline-offset-2"
           >
-            <FileDown size={18} />
+            <FileDown size={16} />
             <span>{content || 'Documento'}</span>
           </a>
         </div>
@@ -73,8 +73,8 @@ export function MessageBubble({ message }: MessageBubbleProps) {
 
   if (isSystem) {
     return (
-      <div className="flex justify-center my-2">
-        <span className="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
+      <div className="flex justify-center my-3">
+        <span className="text-[11px] text-slate-400 bg-white border border-slate-100 shadow-sm px-3 py-1.5 rounded-full font-medium">
           {message.content}
         </span>
       </div>
@@ -82,23 +82,38 @@ export function MessageBubble({ message }: MessageBubbleProps) {
   }
 
   return (
-    <div className={`flex ${isCustomer ? 'justify-start' : 'justify-end'}`}>
+    <div className={`flex message-bubble ${isCustomer ? 'justify-start' : 'justify-end'}`}>
       <div
-        className={`max-w-[70%] rounded-lg px-4 py-2 ${
+        className={`max-w-[72%] rounded-2xl px-4 py-2.5 shadow-message ${
           isCustomer
-            ? 'bg-white border shadow-sm'
+            ? 'bg-white border border-slate-200 text-slate-800 rounded-tl-sm'
             : isBot
-              ? 'bg-blue-100 text-blue-900'
-              : 'bg-green-500 text-white'
+              ? 'bg-slate-700 text-slate-100 rounded-tr-sm'
+              : 'text-white rounded-tr-sm'
         }`}
+        style={
+          !isCustomer && !isBot
+            ? { background: 'linear-gradient(135deg, #059669 0%, #047857 100%)' }
+            : undefined
+        }
       >
         {!isCustomer && (
-          <p className="text-[10px] font-medium opacity-70 mb-0.5">
-            {isBot ? 'Bot' : message.senderUser?.fullName ?? 'Atendente'}
+          <p
+            className={`text-[10px] font-semibold mb-1 ${
+              isBot ? 'text-slate-400' : 'text-emerald-200'
+            }`}
+          >
+            {isBot ? '🤖 Bot' : (message.senderUser?.fullName ?? 'Atendente')}
           </p>
         )}
+
         <MediaContent message={message} />
-        <p className={`text-[10px] text-right mt-1 ${isCustomer ? 'text-gray-400' : 'opacity-70'}`}>
+
+        <p
+          className={`text-[10px] text-right mt-1.5 tabular-nums ${
+            isCustomer ? 'text-slate-400' : isBot ? 'text-slate-500' : 'text-emerald-200'
+          }`}
+        >
           {formatTime(message.sentAt)}
         </p>
       </div>

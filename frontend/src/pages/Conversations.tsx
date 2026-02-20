@@ -22,29 +22,34 @@ export default function Conversations() {
   }, [search]);
 
   return (
-    <div className="h-[calc(100vh-8rem)] flex rounded-lg overflow-hidden border bg-white shadow-sm">
-      {/* Conversation list */}
-      <div className="w-80 border-r flex flex-col">
-        <div className="p-4 border-b space-y-3">
-          <h2 className="font-semibold text-gray-900">Conversas</h2>
+    <div className="h-[calc(100vh-7.5rem)] flex rounded-xl overflow-hidden border border-slate-200 bg-white shadow-card animate-fade-in">
+      {/* Conversation list panel */}
+      <div className="w-80 border-r border-slate-100 flex flex-col shrink-0">
+        {/* Panel header */}
+        <div className="px-4 pt-4 pb-3 border-b border-slate-100 space-y-3">
+          <h2 className="font-semibold text-slate-900">Conversas</h2>
+
+          {/* Search */}
           <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
             <Input
-              placeholder="Buscar por nome, telefone ou mensagem..."
+              placeholder="Buscar..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 h-9 text-sm"
+              className="pl-9 h-8 text-sm bg-slate-50 border-slate-200 focus:bg-white"
             />
           </div>
+
+          {/* Status filter tabs */}
           <div className="flex gap-1">
             {STATUS_TABS.map((tab) => (
               <button
                 key={tab.value}
                 onClick={() => setStatusFilter(tab.value)}
-                className={`px-2.5 py-1 text-xs rounded-md font-medium transition-colors ${
+                className={`px-2.5 py-1 text-xs rounded-md font-semibold transition-all duration-150 ${
                   statusFilter === tab.value
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-500 hover:bg-gray-100'
+                    ? 'bg-emerald-50 text-emerald-700'
+                    : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
                 }`}
               >
                 {tab.label}
@@ -52,6 +57,8 @@ export default function Conversations() {
             ))}
           </div>
         </div>
+
+        {/* List */}
         <div className="flex-1 overflow-hidden">
           <ConversationList
             search={debouncedSearch || undefined}
@@ -61,7 +68,7 @@ export default function Conversations() {
       </div>
 
       {/* Chat window */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col overflow-hidden">
         <ChatWindow />
       </div>
     </div>

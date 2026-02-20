@@ -5,7 +5,7 @@ import { DepartmentsManagement } from '../components/admin/DepartmentsManagement
 import { BotConfigManagement } from '../components/admin/BotConfigManagement';
 
 const tabs = [
-  { id: 'users', label: 'Usuarios', icon: Users },
+  { id: 'users', label: 'Usuários', icon: Users },
   { id: 'departments', label: 'Setores', icon: Building2 },
   { id: 'bot', label: 'Bot', icon: MessageSquare },
 ] as const;
@@ -16,34 +16,44 @@ export default function Settings() {
   const [activeTab, setActiveTab] = useState<TabId>('users');
 
   return (
-    <div>
-      <div className="flex items-center gap-2 mb-6">
-        <Settings2 size={24} className="text-gray-700" />
-        <h1 className="text-2xl font-bold text-gray-900">Configuracoes</h1>
+    <div className="animate-fade-in">
+      {/* Page header */}
+      <div className="mb-8 flex items-center gap-3">
+        <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
+          <Settings2 size={20} className="text-slate-600" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Configurações</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Gerencie usuários, setores e o bot</p>
+        </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1 mb-6 border-b">
+      {/* Tab navigation */}
+      <div
+        className="flex gap-0.5 mb-6 bg-slate-100 p-1 rounded-xl w-fit"
+      >
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-150 ${
               activeTab === tab.id
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-500 hover:text-slate-700'
             }`}
           >
-            <tab.icon size={16} />
+            <tab.icon size={15} />
             {tab.label}
           </button>
         ))}
       </div>
 
       {/* Content */}
-      {activeTab === 'users' && <UsersManagement />}
-      {activeTab === 'departments' && <DepartmentsManagement />}
-      {activeTab === 'bot' && <BotConfigManagement />}
+      <div className="bg-white rounded-xl shadow-card border border-slate-100 p-6">
+        {activeTab === 'users' && <UsersManagement />}
+        {activeTab === 'departments' && <DepartmentsManagement />}
+        {activeTab === 'bot' && <BotConfigManagement />}
+      </div>
     </div>
   );
 }

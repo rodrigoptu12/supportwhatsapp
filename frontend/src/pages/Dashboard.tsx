@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { conversationsApi } from '../services/conversations.service';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
-import { MessageSquare, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { MessageSquare, Clock, CheckCircle, AlertCircle, TrendingUp } from 'lucide-react';
 
 export default function Dashboard() {
   const { data: stats, isLoading } = useQuery({
@@ -19,46 +19,83 @@ export default function Dashboard() {
       label: 'Total de Conversas',
       value: stats?.total ?? 0,
       icon: MessageSquare,
-      color: 'bg-blue-500',
+      iconBg: 'bg-violet-50',
+      iconColor: 'text-violet-600',
+      accent: 'border-t-violet-400',
+      trend: null,
     },
     {
       label: 'Conversas Abertas',
       value: stats?.open ?? 0,
       icon: AlertCircle,
-      color: 'bg-green-500',
+      iconBg: 'bg-emerald-50',
+      iconColor: 'text-emerald-600',
+      accent: 'border-t-emerald-400',
+      trend: 'ativo',
     },
     {
       label: 'Aguardando',
       value: stats?.waiting ?? 0,
       icon: Clock,
-      color: 'bg-yellow-500',
+      iconBg: 'bg-amber-50',
+      iconColor: 'text-amber-600',
+      accent: 'border-t-amber-400',
+      trend: null,
     },
     {
       label: 'Finalizadas',
       value: stats?.closed ?? 0,
       icon: CheckCircle,
-      color: 'bg-gray-500',
+      iconBg: 'bg-slate-50',
+      iconColor: 'text-slate-500',
+      accent: 'border-t-slate-300',
+      trend: null,
     },
   ];
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Dashboard</h1>
+    <div className="animate-fade-in">
+      {/* Page header */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
+        <p className="text-sm text-slate-500 mt-1">
+          Visão geral do atendimento em tempo real
+        </p>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Stat cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         {cards.map((card) => (
-          <div key={card.label} className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">{card.label}</p>
-                <p className="text-3xl font-bold mt-1">{card.value}</p>
+          <div
+            key={card.label}
+            className={`bg-white rounded-xl shadow-card border border-slate-100 border-t-2 ${card.accent} p-6 hover:shadow-card-hover transition-shadow duration-300`}
+          >
+            <div className="flex items-start justify-between mb-5">
+              <div className={`w-11 h-11 rounded-xl ${card.iconBg} flex items-center justify-center`}>
+                <card.icon size={20} className={card.iconColor} />
               </div>
-              <div className={`${card.color} p-3 rounded-lg`}>
-                <card.icon size={24} className="text-white" />
-              </div>
+              {card.trend && (
+                <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                  <TrendingUp size={9} />
+                  {card.trend}
+                </span>
+              )}
             </div>
+            <p className="text-3xl font-bold text-slate-900 tabular-nums">{card.value}</p>
+            <p className="text-sm text-slate-500 font-medium mt-1">{card.label}</p>
           </div>
         ))}
+      </div>
+
+      {/* Quick info */}
+      <div className="mt-8 p-5 bg-white rounded-xl shadow-card border border-slate-100">
+        <div className="flex items-center gap-2.5 text-sm text-slate-500">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+          </span>
+          Dados atualizados a cada 30 segundos automaticamente
+        </div>
       </div>
     </div>
   );
