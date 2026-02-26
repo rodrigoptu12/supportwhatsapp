@@ -71,10 +71,14 @@ vi.mock('../TransferDialog', () => ({
 }));
 
 // Mock lucide-react
-vi.mock('lucide-react', () => ({
-  MessageSquare: () => <svg data-testid="message-square-icon" />,
-  Send: () => <svg data-testid="send-icon" />,
-}));
+vi.mock('lucide-react', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('lucide-react')>();
+  return {
+    ...actual,
+    MessageSquare: () => <svg data-testid="message-square-icon" />,
+    Send: () => <svg data-testid="send-icon" />,
+  };
+});
 
 // Mock sub-components - MessageBubble renders content, MessageInput allows interaction
 vi.mock('../MessageBubble', () => ({
@@ -116,7 +120,7 @@ describe('ChatWindow', () => {
     storeConversation = null;
     await renderChatWindow();
 
-    expect(screen.getByText('Selecione uma conversa')).toBeInTheDocument();
+    expect(screen.getByText('Nenhuma conversa selecionada')).toBeInTheDocument();
     expect(screen.getByTestId('message-square-icon')).toBeInTheDocument();
   });
 
@@ -146,23 +150,23 @@ describe('ChatWindow', () => {
 
     expect(screen.getByRole('button', { name: 'Transferir' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Finalizar' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Assumir Atendimento' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Assumir atendimento' })).not.toBeInTheDocument();
   });
 
-  it('shows "Assumir Atendimento" when isBotActive is true', async () => {
+  it('shows "Assumir atendimento" when isBotActive is true', async () => {
     storeConversation = { ...fakeConversation, isBotActive: true };
     await renderChatWindow();
 
-    expect(screen.getByRole('button', { name: 'Assumir Atendimento' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Assumir atendimento' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Transferir' })).not.toBeInTheDocument();
   });
 
-  it('calls takeover when "Assumir Atendimento" is clicked', async () => {
+  it('calls takeover when "Assumir atendimento" is clicked', async () => {
     const user = userEvent.setup();
     storeConversation = { ...fakeConversation, isBotActive: true };
     await renderChatWindow();
 
-    await user.click(screen.getByRole('button', { name: 'Assumir Atendimento' }));
+    await user.click(screen.getByRole('button', { name: 'Assumir atendimento' }));
 
     expect(mockTakeover).toHaveBeenCalledWith('conv-1');
   });

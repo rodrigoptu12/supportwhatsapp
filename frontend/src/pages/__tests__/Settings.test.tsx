@@ -18,8 +18,8 @@ vi.mock('../../components/admin/BotConfigManagement', () => ({
 describe('Settings page', () => {
   it('renders title and tabs', () => {
     render(<Settings />);
-    expect(screen.getByText('Configuracoes')).toBeInTheDocument();
-    expect(screen.getByText('Usuarios')).toBeInTheDocument();
+    expect(screen.getByText('Configurações')).toBeInTheDocument();
+    expect(screen.getByText('Usuários')).toBeInTheDocument();
     expect(screen.getByText('Setores')).toBeInTheDocument();
     expect(screen.getByText('Bot')).toBeInTheDocument();
   });

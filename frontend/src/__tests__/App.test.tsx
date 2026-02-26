@@ -58,7 +58,7 @@ describe('App', () => {
     render(<App />);
 
     await waitFor(() => {
-      expect(screen.getByText('WhatsApp Support')).toBeInTheDocument();
+      expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     });
   });
 
@@ -68,7 +68,7 @@ describe('App', () => {
     render(<App />);
 
     await waitFor(() => {
-      expect(screen.getByText('WhatsApp Support')).toBeInTheDocument();
+      expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     });
   });
 
@@ -90,7 +90,7 @@ describe('App', () => {
     render(<App />);
 
     await waitFor(() => {
-      expect(screen.getByText('WhatsApp Support')).toBeInTheDocument();
+      expect(screen.getByText('Suporte')).toBeInTheDocument();
     });
   });
 
@@ -101,7 +101,7 @@ describe('App', () => {
     render(<App />);
 
     await waitFor(() => {
-      expect(screen.getByText('WhatsApp Support')).toBeInTheDocument();
+      expect(screen.getByText('Suporte')).toBeInTheDocument();
     });
   });
 
@@ -112,7 +112,7 @@ describe('App', () => {
     render(<App />);
 
     await waitFor(() => {
-      expect(screen.getByText('WhatsApp Support')).toBeInTheDocument();
+      expect(screen.getByText('Suporte')).toBeInTheDocument();
     });
   });
 });

@@ -22,12 +22,12 @@ export default function Conversations() {
   }, [search]);
 
   return (
-    <div className="h-[calc(100vh-7.5rem)] flex rounded-xl overflow-hidden border border-slate-200 bg-white shadow-card animate-fade-in">
+    <div className="h-[calc(100vh-7.5rem)] flex rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-card animate-fade-in">
       {/* Conversation list panel */}
-      <div className="w-80 border-r border-slate-100 flex flex-col shrink-0">
+      <div className="w-80 border-r border-slate-100 dark:border-slate-700 flex flex-col shrink-0">
         {/* Panel header */}
-        <div className="px-4 pt-4 pb-3 border-b border-slate-100 space-y-3">
-          <h2 className="font-semibold text-slate-900">Conversas</h2>
+        <div className="px-4 pt-4 pb-3 border-b border-slate-100 dark:border-slate-700 space-y-3">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-100">Conversas</h2>
 
           {/* Search */}
           <div className="relative">

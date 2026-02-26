@@ -24,6 +24,7 @@ model User {
   transfersFrom         ConversationTransfer[] @relation("TransferFrom")
   transfersTo           ConversationTransfer[] @relation("TransferTo")
   departments           UserDepartment[]
+  massMessageBatches    MassMessageBatch[]
 
   @@map("users")
 }
@@ -152,6 +153,22 @@ model BotConfiguration {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("bot_configurations")
+}
+
+model MassMessageBatch {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  label        String   @db.VarChar(255)
+  type         String   @db.VarChar(20)
+  total        Int
+  successCount Int      @map("success_count")
+  failureCount Int      @map("failure_count")
+  sentAt       DateTime @default(now()) @map("sent_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([sentAt(sort: Desc)], map: "idx_mass_message_batches_sent_at")
+  @@map("mass_message_batches")
 }
 
 model Metric {

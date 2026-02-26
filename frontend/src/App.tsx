@@ -11,6 +11,8 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Conversations = lazy(() => import('./pages/Conversations'));
 const Metrics = lazy(() => import('./pages/Metrics'));
 const Settings = lazy(() => import('./pages/Settings'));
+const MassMessage = lazy(() => import('./pages/MassMessage'));
+const Templates = lazy(() => import('./pages/Templates'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,6 +47,8 @@ function App() {
               <Route path="/conversations" element={<Conversations />} />
               <Route path="/metrics" element={<Metrics />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/mass-message" element={<MassMessage />} />
+              <Route path="/templates" element={<Templates />} />
             </Route>
           </Routes>
         </Suspense>

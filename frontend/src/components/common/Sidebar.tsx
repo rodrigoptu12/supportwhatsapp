@@ -1,4 +1,4 @@
-import { MessageSquare, LayoutDashboard, BarChart3, Settings, Headphones } from 'lucide-react';
+import { MessageSquare, LayoutDashboard, BarChart3, Settings, Headphones, Zap, LayoutTemplate } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -6,6 +6,8 @@ const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/conversations', icon: MessageSquare, label: 'Conversas' },
   { to: '/metrics', icon: BarChart3, label: 'Métricas', roles: ['admin', 'supervisor'] },
+  { to: '/templates', icon: LayoutTemplate, label: 'Templates', roles: ['admin', 'supervisor'] },
+  { to: '/mass-message', icon: Zap, label: 'Envio em Massa', roles: ['admin', 'supervisor'] },
   { to: '/settings', icon: Settings, label: 'Configurações', roles: ['admin'] },
 ];
 

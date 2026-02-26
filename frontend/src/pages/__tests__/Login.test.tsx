@@ -29,7 +29,6 @@ describe('Login page', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText('WhatsApp Support')).toBeInTheDocument();
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
   });
 

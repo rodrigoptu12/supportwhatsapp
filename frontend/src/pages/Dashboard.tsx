@@ -57,7 +57,7 @@ export default function Dashboard() {
     <div className="animate-fade-in">
       {/* Page header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Dashboard</h1>
         <p className="text-sm text-slate-500 mt-1">
           Visão geral do atendimento em tempo real
         </p>
@@ -68,7 +68,7 @@ export default function Dashboard() {
         {cards.map((card) => (
           <div
             key={card.label}
-            className={`bg-white rounded-xl shadow-card border border-slate-100 border-t-2 ${card.accent} p-6 hover:shadow-card-hover transition-shadow duration-300`}
+            className={`bg-white dark:bg-[#0d1626] rounded-xl shadow-card border border-slate-100 dark:border-slate-700 border-t-2 ${card.accent} p-6 hover:shadow-card-hover transition-shadow duration-300`}
           >
             <div className="flex items-start justify-between mb-5">
               <div className={`w-11 h-11 rounded-xl ${card.iconBg} flex items-center justify-center`}>
@@ -81,14 +81,14 @@ export default function Dashboard() {
                 </span>
               )}
             </div>
-            <p className="text-3xl font-bold text-slate-900 tabular-nums">{card.value}</p>
+            <p className="text-3xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">{card.value}</p>
             <p className="text-sm text-slate-500 font-medium mt-1">{card.label}</p>
           </div>
         ))}
       </div>
 
       {/* Quick info */}
-      <div className="mt-8 p-5 bg-white rounded-xl shadow-card border border-slate-100">
+      <div className="mt-8 p-5 bg-white dark:bg-[#0d1626] rounded-xl shadow-card border border-slate-100 dark:border-slate-700">
         <div className="flex items-center gap-2.5 text-sm text-slate-500">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />

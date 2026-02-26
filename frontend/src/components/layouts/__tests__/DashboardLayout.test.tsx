@@ -45,8 +45,8 @@ describe('DashboardLayout', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText('WhatsApp Support')).toBeInTheDocument();
-    expect(screen.getByText('Atendimento')).toBeInTheDocument();
+    expect(screen.getByText('Suporte')).toBeInTheDocument();
+    expect(screen.getByText('Navegação')).toBeInTheDocument();
     expect(screen.getByText('Dashboard Content')).toBeInTheDocument();
   });
 });

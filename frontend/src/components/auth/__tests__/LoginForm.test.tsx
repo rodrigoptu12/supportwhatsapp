@@ -85,7 +85,7 @@ describe('LoginForm', () => {
     await user.click(screen.getByRole('button', { name: /entrar/i }));
 
     await waitFor(() => {
-      expect(screen.getByText('Email ou senha invalidos')).toBeInTheDocument();
+      expect(screen.getByText('Email ou senha inválidos')).toBeInTheDocument();
     });
   });
 });

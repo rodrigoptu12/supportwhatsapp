@@ -44,9 +44,10 @@ describe('Header', () => {
     vi.mocked(useQuery).mockReturnValue({ data: [], isLoading: false } as any);
   });
 
-  it('renders app title', () => {
+  it('renders logout button and user info', () => {
     render(<Header />);
-    expect(screen.getByText('WhatsApp Support')).toBeInTheDocument();
+    expect(screen.getByTitle('Sair')).toBeInTheDocument();
+    expect(screen.getByText('Admin User')).toBeInTheDocument();
   });
 
   it('renders user name and role', () => {

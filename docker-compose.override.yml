@@ -1,0 +1,14 @@
+services:
+  postgres:
+    ports:
+      - "5433:5432"
+
+  nginx:
+    ports:
+      - "80:80"
+
+  frontend:
+    build:
+      args:
+        VITE_API_URL: /api/v1
+        VITE_WS_URL: ""

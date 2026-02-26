@@ -30,7 +30,7 @@ export default function Settings() {
 
       {/* Tab navigation */}
       <div
-        className="flex gap-0.5 mb-6 bg-slate-100 p-1 rounded-xl w-fit"
+        className="flex gap-0.5 mb-6 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl w-fit"
       >
         {tabs.map((tab) => (
           <button
@@ -38,8 +38,8 @@ export default function Settings() {
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-150 ${
               activeTab === tab.id
-                ? 'bg-white text-slate-900 shadow-sm'
-                : 'text-slate-500 hover:text-slate-700'
+                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm'
+                : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
             }`}
           >
             <tab.icon size={15} />
@@ -49,7 +49,7 @@ export default function Settings() {
       </div>
 
       {/* Content */}
-      <div className="bg-white rounded-xl shadow-card border border-slate-100 p-6">
+      <div className="bg-white dark:bg-[#0d1626] rounded-xl shadow-card border border-slate-100 dark:border-slate-700 p-6">
         {activeTab === 'users' && <UsersManagement />}
         {activeTab === 'departments' && <DepartmentsManagement />}
         {activeTab === 'bot' && <BotConfigManagement />}

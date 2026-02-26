@@ -14,6 +14,8 @@ import { usersRoutes } from './modules/users/users.routes';
 import { whatsappRoutes } from './modules/whatsapp/whatsapp.routes';
 import { departmentsRoutes } from './modules/departments/departments.routes';
 import { botConfigRoutes } from './modules/bot-config/bot-config.routes';
+import { massMessageRoutes } from './modules/mass-message/mass-message.routes';
+import { templatesRoutes } from './modules/templates/templates.routes';
 
 const app = express();
 
@@ -54,6 +56,8 @@ app.use('/api/v1/users', usersRoutes);
 app.use('/api/v1/departments', departmentsRoutes);
 app.use('/api/v1/webhooks/whatsapp', whatsappRoutes);
 app.use('/api/v1/bot', botConfigRoutes);
+app.use('/api/v1/mass-message', massMessageRoutes);
+app.use('/api/v1/templates', templatesRoutes);
 
 // 404 handler
 app.use((_req, res) => {

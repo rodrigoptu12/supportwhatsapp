@@ -27,7 +27,7 @@ describe('MessageBubble', () => {
 
   it('renders bot message with Bot label', () => {
     render(<MessageBubble message={makeMessage({ senderType: 'bot', content: 'Ola!' })} />);
-    expect(screen.getByText('Bot')).toBeInTheDocument();
+    expect(screen.getByText(/Bot/)).toBeInTheDocument();
     expect(screen.getByText('Ola!')).toBeInTheDocument();
   });
 

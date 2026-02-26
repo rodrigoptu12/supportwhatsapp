@@ -19,7 +19,7 @@ describe('Conversations page', () => {
     render(<Conversations />);
 
     expect(screen.getByText('Conversas')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/Buscar por nome/)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Buscar/)).toBeInTheDocument();
     expect(screen.getByText('Todas')).toBeInTheDocument();
     expect(screen.getByText('Abertas')).toBeInTheDocument();
     expect(screen.getByText('Aguardando')).toBeInTheDocument();
@@ -42,7 +42,7 @@ describe('Conversations page', () => {
 
     render(<Conversations />);
 
-    await user.type(screen.getByPlaceholderText(/Buscar por nome/), 'Maria');
+    await user.type(screen.getByPlaceholderText(/Buscar/), 'Maria');
 
     // After debounce (400ms), the search should be passed
     await waitFor(() => {

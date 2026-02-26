@@ -11,4 +11,6 @@ export const SocketEvents = {
   NEW_CONVERSATION: 'new_conversation',
   ATTENDANT_ONLINE: 'attendant_online',
   ATTENDANT_OFFLINE: 'attendant_offline',
+  MASS_MESSAGE_PROGRESS: 'mass_message_progress',
+  MASS_MESSAGE_DONE: 'mass_message_done',
 } as const;

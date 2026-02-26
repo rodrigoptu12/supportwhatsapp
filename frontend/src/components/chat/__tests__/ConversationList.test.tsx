@@ -47,7 +47,7 @@ describe('ConversationList', () => {
     } as any);
 
     render(<ConversationList />);
-    expect(screen.getByText('Nenhuma conversa encontrada')).toBeInTheDocument();
+    expect(screen.getByText('Nenhuma conversa')).toBeInTheDocument();
   });
 
   it('renders conversation list with customer name and status', () => {
@@ -84,7 +84,7 @@ describe('ConversationList', () => {
     } as any);
 
     render(<ConversationList />);
-    expect(screen.getByText('Atencao')).toBeInTheDocument();
+    expect(screen.getByText('Atenção')).toBeInTheDocument();
   });
 
   it('selects conversation on click', async () => {

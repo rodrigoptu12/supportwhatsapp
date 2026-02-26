@@ -28,6 +28,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    restart: unless-stopped
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -39,6 +40,7 @@ services:
       JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
       WHATSAPP_PHONE_NUMBER_ID: ${WHATSAPP_PHONE_NUMBER_ID}
       WHATSAPP_ACCESS_TOKEN: ${WHATSAPP_ACCESS_TOKEN}
+      WHATSAPP_BUSINESS_ACCOUNT_ID: ${WHATSAPP_BUSINESS_ACCOUNT_ID:-}
       WEBHOOK_VERIFY_TOKEN: ${WEBHOOK_VERIFY_TOKEN}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       FRONTEND_URL: https://suporte.escolamulti.com.br
@@ -51,6 +53,12 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:3000/health',(r)=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   frontend:
     build:
@@ -66,11 +74,14 @@ services:
     build:
       context: ./nginx
       dockerfile: Dockerfile
+    restart: unless-stopped
     expose:
       - "80"
     depends_on:
-      - backend
-      - frontend
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_started
 
 volumes:
   postgres_data:

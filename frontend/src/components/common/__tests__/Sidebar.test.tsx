@@ -46,8 +46,8 @@ describe('Sidebar', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText('Metricas')).toBeInTheDocument();
-    expect(screen.queryByText('Configuracoes')).not.toBeInTheDocument();
+    expect(screen.getByText('Métricas')).toBeInTheDocument();
+    expect(screen.queryByText('Configurações')).not.toBeInTheDocument();
   });
 
   it('shows all items for admin', () => {
@@ -64,11 +64,11 @@ describe('Sidebar', () => {
 
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
     expect(screen.getByText('Conversas')).toBeInTheDocument();
-    expect(screen.getByText('Metricas')).toBeInTheDocument();
-    expect(screen.getByText('Configuracoes')).toBeInTheDocument();
+    expect(screen.getByText('Métricas')).toBeInTheDocument();
+    expect(screen.getByText('Configurações')).toBeInTheDocument();
   });
 
-  it('renders Atendimento title', () => {
+  it('renders Navegacao title', () => {
     useAuthStore.setState({
       user: { id: '1', email: 'a@a.com', fullName: 'User', role: 'attendant', isActive: true, createdAt: '2024-01-01' },
       isAuthenticated: true,
@@ -80,6 +80,6 @@ describe('Sidebar', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText('Atendimento')).toBeInTheDocument();
+    expect(screen.getByText('Navegação')).toBeInTheDocument();
   });
 });
