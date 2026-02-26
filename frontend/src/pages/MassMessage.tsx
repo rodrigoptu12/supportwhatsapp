@@ -97,37 +97,72 @@ function normalizePhone(raw: unknown): { phone: string; valid: boolean } {
   return { phone: fallback, valid: false };
 }
 
-function parseExcel(buffer: ArrayBuffer): Student[] {
-  const wb = XLSX.read(buffer, { type: 'array' });
+// ─── Robust column matching ───────────────────────────────────────────────────
+
+/** Normaliza um nome de coluna: lowercase, sem acentos, sem pontuação/espaços.
+ *  Ex: "E-mail" → "email", "Contato Aluno" → "contatoaluno", "R.A." → "ra" */
+function normKey(s: string): string {
+  return String(s)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // remove acentos: é→e, ã→a, ç→c
+    .replace(/[^a-z0-9]/g, '');      // remove tudo que não é letra/dígito
+}
+
+/** Busca um valor na linha usando lista de candidatos normalizados.
+ *  Primeiro tenta match exato normalizado; depois startsWith (lida com sufixos
+ *  como "_1" que o xlsx adiciona em colunas duplicadas). */
+function findCol(normRow: Map<string, unknown>, candidates: string[]): unknown {
+  for (const c of candidates) {
+    if (normRow.has(c)) return normRow.get(c);
+  }
+  for (const c of candidates) {
+    for (const [k, v] of normRow) {
+      if (k.startsWith(c) || c.startsWith(k)) return v;
+    }
+  }
+  return '';
+}
+
+function parseFile(buffer: ArrayBuffer, fileName: string): Student[] {
+  let wb: ReturnType<typeof XLSX.read>;
+
+  if (/\.csv$/i.test(fileName)) {
+    // UTF-8 decode first, then parse as CSV string
+    const text = new TextDecoder('utf-8').decode(buffer);
+    wb = XLSX.read(text, { type: 'string' });
+  } else {
+    wb = XLSX.read(buffer, { type: 'array' });
+  }
+
   const sheetName = wb.SheetNames[0] ?? '';
   const ws = wb.Sheets[sheetName];
   if (!ws) return [];
-  const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(ws, { defval: '' });
 
+  const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(ws, { defval: '' });
   const students: Student[] = [];
 
   rows.forEach((row, idx) => {
-    // Phone: novo formato = 'Telefone', antigo = 'Contato Aluno'
-    const phoneRaw =
-      row['Telefone'] ??
-      row['telefone'] ??
-      row['TELEFONE'] ??
-      row['Contato Aluno'] ??
-      row['Contato Aluno_1'] ??
-      row['CONTATO ALUNO'] ??
-      row['contato aluno'] ??
-      '';
+    // Constrói mapa normalizado para esta linha
+    const normRow = new Map<string, unknown>();
+    for (const [k, v] of Object.entries(row)) {
+      normRow.set(normKey(k), v);
+    }
 
+    const phoneRaw = findCol(normRow, [
+      'telefone', 'fone', 'celular', 'tel',
+      'contatoaluno', 'contato', 'whatsapp',
+    ]);
     const { phone, valid } = normalizePhone(phoneRaw);
 
     students.push({
       id: `row-${idx}`,
-      rm: String(row['RA'] ?? row['RM'] ?? row['rm'] ?? ''),
-      name: String(row['Nome'] ?? row['nome'] ?? row['Aluno'] ?? row['aluno'] ?? row['ALUNO'] ?? ''),
-      turma: String(row['Turma'] ?? row['turma'] ?? row['TURMA'] ?? ''),
-      email: String(row['E-mail'] ?? row['E-Mail'] ?? row['email'] ?? row['Email'] ?? ''),
+      rm:     String(findCol(normRow, ['ra', 'rm', 'matricula', 'registro', 'cod'])),
+      name:   String(findCol(normRow, ['nome', 'aluno', 'nomealuno', 'nomecompl', 'nomecomplet', 'nomecompleto'])),
+      turma:  String(findCol(normRow, ['turma', 'classe', 'serie', 'turno', 'curso'])),
+      email:  String(findCol(normRow, ['email', 'emailaluno', 'emailresponsavel', 'correio'])),
       phone,
-      status: String(row['Status'] ?? row['status'] ?? row['STATUS'] ?? ''),
+      status: String(findCol(normRow, ['status', 'situacao', 'situacaoaluno', 'situacaomatricula'])),
       phoneValid: valid,
     });
   });
@@ -268,8 +303,8 @@ export default function MassMessage() {
   // ── File handling ────────────────────────────────────────────────────────
 
   const processFile = useCallback((file: File) => {
-    if (!file.name.match(/\.(xls|xlsx)$/i)) {
-      alert('Por favor, envie um arquivo .xls ou .xlsx');
+    if (!file.name.match(/\.(xls|xlsx|csv)$/i)) {
+      setSendError('Formato não suportado. Envie um arquivo .xls, .xlsx ou .csv');
       return;
     }
     setFileName(file.name);
@@ -277,13 +312,21 @@ export default function MassMessage() {
     reader.onload = (e) => {
       try {
         const buffer = e.target?.result as ArrayBuffer;
-        const parsed = parseExcel(buffer);
+        const parsed = parseFile(buffer, file.name);
+        if (parsed.length === 0) {
+          setSendError(
+            'Nenhum aluno encontrado no arquivo. Verifique se as colunas Nome/Aluno e RA/RM existem e têm dados.',
+          );
+          return;
+        }
         setStudents(parsed);
-        // Pre-select all valid contacts
         setSelected(new Set(parsed.filter((s) => s.phoneValid).map((s) => s.id)));
+        setSendError(null);
         setStep('compose');
-      } catch {
-        alert('Erro ao ler o arquivo Excel. Verifique se o formato está correto.');
+      } catch (err) {
+        setSendError(
+          'Erro ao ler o arquivo: ' + (err instanceof Error ? err.message : 'formato inválido'),
+        );
       }
     };
     reader.readAsArrayBuffer(file);
@@ -528,7 +571,20 @@ export default function MassMessage() {
             STEP: UPLOAD
         ═══════════════════════════════════════════════════════════════ */}
         {activeTab === 'send' && step === 'upload' && (
-          <div className="max-w-2xl mx-auto pt-8">
+          <div className="max-w-2xl mx-auto pt-8 space-y-4">
+            {/* Error banner */}
+            {sendError && (
+              <div
+                className="flex items-start gap-3 rounded-xl px-4 py-3"
+                style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)' }}
+              >
+                <XCircle size={15} style={{ color: '#f87171' }} className="shrink-0 mt-0.5" />
+                <p className="text-xs text-red-400 flex-1">{sendError}</p>
+                <button onClick={() => setSendError(null)} className="text-slate-600 hover:text-slate-400 shrink-0">
+                  <X size={13} />
+                </button>
+              </div>
+            )}
             {/* Drop zone */}
             <div
               onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
@@ -567,7 +623,7 @@ export default function MassMessage() {
                 <p className="text-sm font-semibold text-white mb-1">
                   {isDragging ? 'Solte o arquivo aqui' : 'Arraste sua planilha ou clique para selecionar'}
                 </p>
-                <p className="text-xs text-slate-500">Formatos aceitos: .xls, .xlsx</p>
+                <p className="text-xs text-slate-500">Formatos aceitos: .xls, .xlsx, .csv</p>
               </div>
 
               <div
@@ -584,7 +640,7 @@ export default function MassMessage() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".xls,.xlsx"
+                accept=".xls,.xlsx,.csv"
                 className="hidden"
                 id={uid}
                 onChange={handleFileChange}
@@ -593,40 +649,38 @@ export default function MassMessage() {
 
             {/* Column reference */}
             <div
-              className="mt-6 rounded-xl p-4"
+              className="rounded-xl p-4"
               style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}
             >
               <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">
-                Colunas esperadas na planilha
+                Colunas reconhecidas automaticamente
               </p>
-              <div className="flex flex-wrap gap-2">
+
+              {/* Key fields with accepted names */}
+              <div className="space-y-2 mb-3">
                 {[
-                  'RA', 'Nome', 'Data Nascimento', 'CPF', 'E-mail', 'Telefone', 'Status',
-                  'RM', 'Aluno', 'Turma', 'Contato Aluno',
-                  'Data', 'RG', 'Início', 'Término', 'Valor', 'Usuário',
-                  'Publicidade', 'Tipo de Matrícula',
-                  'Endereço', 'Bairro', 'Numero', 'Complemento', 'Cidade',
-                  'CEP', 'UF', 'Responsável Financeiro', 'CPF / CNPJ',
-                  'Contato',
-                ].map((col) => {
-                  const key = ['Nome', 'Telefone', 'RA', 'Aluno', 'Turma', 'RM', 'Contato Aluno', 'Status'].includes(col);
-                  return (
+                  { field: 'Nome / Aluno', accepts: 'Nome, Aluno, Nome Aluno, Nome Completo' },
+                  { field: 'Telefone', accepts: 'Telefone, Fone, Celular, Tel, Contato Aluno, WhatsApp' },
+                  { field: 'RA / RM', accepts: 'RA, RM, Matrícula, Registro, Cod' },
+                  { field: 'Turma', accepts: 'Turma, Classe, Serie, Curso' },
+                  { field: 'E-mail', accepts: 'E-mail, Email, E-Mail' },
+                  { field: 'Status', accepts: 'Status, Situação, Situação Aluno' },
+                ].map(({ field, accepts }) => (
+                  <div key={field} className="flex items-baseline gap-2">
                     <span
-                      key={col}
-                      className="px-2 py-0.5 rounded text-[11px] font-medium"
-                      style={{
-                        background: key ? 'rgba(16,185,129,0.12)' : 'rgba(255,255,255,0.04)',
-                        color: key ? '#34d399' : '#64748b',
-                        border: key ? '1px solid rgba(16,185,129,0.25)' : '1px solid transparent',
-                      }}
+                      className="text-[11px] font-bold shrink-0 px-1.5 py-0.5 rounded"
+                      style={{ background: 'rgba(16,185,129,0.12)', color: '#34d399', border: '1px solid rgba(16,185,129,0.2)' }}
                     >
-                      {col}
+                      {field}
                     </span>
-                  );
-                })}
+                    <span className="text-[10px] text-slate-600 leading-relaxed">{accepts}</span>
+                  </div>
+                ))}
               </div>
+
               <p className="text-[10px] text-slate-600 mt-2">
-                Colunas em verde são utilizadas no envio das mensagens
+                A detecção ignora maiúsculas, minúsculas, acentos e pontuação — funciona mesmo após salvar no Excel.
+                Aceita .xls, .xlsx e .csv.
               </p>
             </div>
           </div>
