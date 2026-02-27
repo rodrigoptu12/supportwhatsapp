@@ -25,13 +25,13 @@ export function ChatWindow() {
 
   if (!selectedConversation) {
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-4 text-slate-400 bg-slate-50/50">
-        <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center">
-          <MessageSquare size={28} className="text-slate-300" />
+      <div className="flex flex-col items-center justify-center h-full gap-4 text-slate-400 dark:text-slate-500 bg-slate-50/50 dark:bg-slate-900/50">
+        <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+          <MessageSquare size={28} className="text-slate-300 dark:text-slate-600" />
         </div>
         <div className="text-center">
-          <p className="font-semibold text-slate-500 text-sm">Nenhuma conversa selecionada</p>
-          <p className="text-xs text-slate-400 mt-1">Selecione uma conversa para começar</p>
+          <p className="font-semibold text-slate-500 dark:text-slate-400 text-sm">Nenhuma conversa selecionada</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Selecione uma conversa para começar</p>
         </div>
       </div>
     );
@@ -65,8 +65,7 @@ export function ChatWindow() {
     <div className="flex flex-col h-full">
       {/* Chat header */}
       <div
-        className="flex items-center justify-between px-5 py-3.5 bg-white shrink-0"
-        style={{ borderBottom: '1px solid #f1f5f9' }}
+        className="flex items-center justify-between px-5 py-3.5 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-700 shrink-0"
       >
         <div className="flex items-center gap-3 min-w-0">
           {/* Avatar */}
@@ -77,7 +76,7 @@ export function ChatWindow() {
           {/* Info */}
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <h2 className="text-sm font-semibold text-slate-900 truncate">
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
                 {selectedConversation.customer.name}
               </h2>
               <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${statusColors[selectedConversation.status] ?? 'bg-slate-300'}`} />
@@ -114,7 +113,7 @@ export function ChatWindow() {
                 size="sm"
                 variant="outline"
                 onClick={() => setShowTransferDialog(true)}
-                className="text-xs h-8 px-3 gap-1.5 border-slate-200 text-slate-600 hover:bg-slate-50"
+                className="text-xs h-8 px-3 gap-1.5 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
                 <ArrowLeftRight size={13} />
                 Transferir
@@ -135,8 +134,7 @@ export function ChatWindow() {
 
       {/* Messages area */}
       <div
-        className="flex-1 overflow-y-auto p-5 space-y-2"
-        style={{ background: '#f8fafc' }}
+        className="flex-1 overflow-y-auto p-5 space-y-2 bg-slate-50 dark:bg-slate-950"
       >
         {isLoading ? (
           <LoadingSpinner className="h-full" />
@@ -152,8 +150,7 @@ export function ChatWindow() {
 
       {/* Input area */}
       <div
-        className="shrink-0 px-4 py-3 bg-white"
-        style={{ borderTop: '1px solid #f1f5f9' }}
+        className="shrink-0 px-4 py-3 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-700"
       >
         <MessageInput
           onSend={handleSend}

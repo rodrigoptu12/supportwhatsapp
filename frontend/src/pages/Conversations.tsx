@@ -36,7 +36,7 @@ export default function Conversations() {
               placeholder="Buscar..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 h-8 text-sm bg-slate-50 border-slate-200 focus:bg-white"
+              className="pl-9 h-8 text-sm bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-slate-700"
             />
           </div>
 
@@ -48,8 +48,8 @@ export default function Conversations() {
                 onClick={() => setStatusFilter(tab.value)}
                 className={`px-2.5 py-1 text-xs rounded-md font-semibold transition-all duration-150 ${
                   statusFilter === tab.value
-                    ? 'bg-emerald-50 text-emerald-700'
-                    : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
+                    ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
+                    : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
                 {tab.label}

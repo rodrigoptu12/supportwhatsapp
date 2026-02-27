@@ -74,7 +74,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
   if (isSystem) {
     return (
       <div className="flex justify-center my-3">
-        <span className="text-[11px] text-slate-400 bg-white border border-slate-100 shadow-sm px-3 py-1.5 rounded-full font-medium">
+        <span className="text-[11px] text-slate-400 dark:text-slate-500 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm px-3 py-1.5 rounded-full font-medium">
           {message.content}
         </span>
       </div>
@@ -86,9 +86,9 @@ export function MessageBubble({ message }: MessageBubbleProps) {
       <div
         className={`max-w-[72%] rounded-2xl px-4 py-2.5 shadow-message ${
           isCustomer
-            ? 'bg-white border border-slate-200 text-slate-800 rounded-tl-sm'
+            ? 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-tl-sm'
             : isBot
-              ? 'bg-slate-700 text-slate-100 rounded-tr-sm'
+              ? 'bg-slate-700 dark:bg-slate-600 text-slate-100 rounded-tr-sm'
               : 'text-white rounded-tr-sm'
         }`}
         style={

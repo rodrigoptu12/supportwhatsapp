@@ -42,8 +42,8 @@ export function ConversationList({ search, statusFilter }: ConversationListProps
 
   if (conversations.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-2 text-slate-400">
-        <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+      <div className="flex flex-col items-center justify-center h-full gap-2 text-slate-400 dark:text-slate-500">
+        <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
           <span className="text-lg">💬</span>
         </div>
         <p className="text-sm font-medium">Nenhuma conversa</p>
@@ -74,12 +74,11 @@ export function ConversationList({ search, statusFilter }: ConversationListProps
           <button
             key={conversation.id}
             onClick={() => selectConversation(conversation)}
-            className={`w-full text-left px-4 py-3.5 transition-all duration-100 relative ${
+            className={`w-full text-left px-4 py-3.5 transition-all duration-100 relative border-b border-slate-100 dark:border-slate-800 ${
               isSelected
-                ? 'bg-emerald-50 border-r-2 border-r-emerald-500'
-                : 'hover:bg-slate-50 border-r-2 border-r-transparent'
+                ? 'bg-emerald-50 dark:bg-emerald-900/20 border-r-2 border-r-emerald-500'
+                : 'hover:bg-slate-50 dark:hover:bg-slate-800/60 border-r-2 border-r-transparent'
             }`}
-            style={{ borderBottom: '1px solid #f8fafc' }}
           >
             <div className="flex items-start gap-3">
               {/* Avatar */}
@@ -90,16 +89,16 @@ export function ConversationList({ search, statusFilter }: ConversationListProps
               {/* Content */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-baseline justify-between gap-1">
-                  <span className="font-semibold text-sm text-slate-800 truncate">
+                  <span className="font-semibold text-sm text-slate-800 dark:text-slate-100 truncate">
                     {conversation.customer.name}
                   </span>
-                  <span className="text-[10px] text-slate-400 font-medium shrink-0">
+                  <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium shrink-0">
                     {timeAgo(conversation.lastMessageAt)}
                   </span>
                 </div>
 
                 {lastMessage && (
-                  <p className="text-xs text-slate-500 truncate mt-0.5 leading-relaxed">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5 leading-relaxed">
                     {getPreview()}
                   </p>
                 )}
@@ -110,7 +109,7 @@ export function ConversationList({ search, statusFilter }: ConversationListProps
                   {conversation.isBotActive && (
                     <Badge
                       variant="secondary"
-                      className="text-[9px] px-1.5 py-0 h-4 font-semibold bg-blue-50 text-blue-600 border-0"
+                      className="text-[9px] px-1.5 py-0 h-4 font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-0"
                     >
                       Bot
                     </Badge>
