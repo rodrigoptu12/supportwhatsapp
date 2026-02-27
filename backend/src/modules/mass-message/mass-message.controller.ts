@@ -32,11 +32,12 @@ export class MassMessageController {
 
   /** POST /send-template — template-based mass message */
   async sendTemplate(req: AuthRequest, res: Response): Promise<void> {
-    const { contacts, templateName, templateLanguage, variableMapping } = req.body as {
+    const { contacts, templateName, templateLanguage, variableMapping, body } = req.body as {
       contacts?: MassMessageContact[];
       templateName?: string;
       templateLanguage?: string;
       variableMapping?: TemplateVarMapping;
+      body?: string;
     };
 
     if (!contacts || !Array.isArray(contacts) || contacts.length === 0) {
@@ -58,6 +59,7 @@ export class MassMessageController {
         templateName: templateName.trim(),
         templateLanguage,
         variableMapping,
+        body,
       },
       req.user?.userId,
     );

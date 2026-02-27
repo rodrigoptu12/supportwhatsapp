@@ -20,6 +20,8 @@ export interface SendMassTemplateDTO {
   templateLanguage?: string;
   /** e.g. { 1: 'name', 2: 'turma', 3: 'rm' } */
   variableMapping: TemplateVarMapping;
+  /** Template body text (for saving to conversation history) */
+  body?: string;
 }
 
 export interface MassMessageResult {

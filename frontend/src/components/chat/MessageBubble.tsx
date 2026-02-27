@@ -109,6 +109,12 @@ export function MessageBubble({ message }: MessageBubbleProps) {
 
         <MediaContent message={message} />
 
+        {message.metadata?.source === 'mass_message' && (
+          <p className="text-[9px] text-emerald-300 mt-1 font-medium tracking-wide">
+            Envio em Massa
+          </p>
+        )}
+
         <p
           className={`text-[10px] text-right mt-1.5 tabular-nums ${
             isCustomer ? 'text-slate-400' : isBot ? 'text-slate-500' : 'text-emerald-200'

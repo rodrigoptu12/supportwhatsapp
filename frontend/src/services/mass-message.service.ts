@@ -64,12 +64,14 @@ export const massMessageService = {
     templateName: string,
     variableMapping: TemplateVarMapping,
     templateLanguage?: string,
+    body?: string,
   ): Promise<SendMassMessageResponse> => {
     const { data } = await api.post<SendMassMessageResponse>('/mass-message/send-template', {
       contacts,
       templateName,
       templateLanguage,
       variableMapping,
+      body,
     });
     return data;
   },

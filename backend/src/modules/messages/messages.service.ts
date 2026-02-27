@@ -39,6 +39,7 @@ export class MessagesService {
         messageType: data.messageType ?? 'text',
         mediaUrl: data.mediaUrl,
         whatsappMessageId: data.whatsappMessageId,
+        ...(data.metadata !== undefined && { metadata: data.metadata }),
       },
       include: {
         senderUser: {

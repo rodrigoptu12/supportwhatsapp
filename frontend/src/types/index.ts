@@ -49,6 +49,7 @@ export interface Message {
   sentAt: string;
   createdAt: string;
   senderUser?: Pick<User, 'id' | 'fullName' | 'avatarUrl'>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface PaginatedResponse<T> {

@@ -415,6 +415,7 @@ export default function MassMessage() {
           activeTemplate.name,
           variableMapping,
           activeTemplate.language,
+          activeTemplate.body,
         );
       } else {
         results = await massMessageService.send(contacts, message.trim());

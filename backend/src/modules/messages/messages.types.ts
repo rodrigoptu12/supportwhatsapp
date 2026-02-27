@@ -25,4 +25,5 @@ export interface CreateMessageDTO {
   messageType?: string;
   mediaUrl?: string;
   whatsappMessageId?: string;
+  metadata?: Record<string, unknown>;
 }
