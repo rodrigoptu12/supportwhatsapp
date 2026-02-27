@@ -19,8 +19,8 @@ export default function Dashboard() {
       label: 'Total de Conversas',
       value: stats?.total ?? 0,
       icon: MessageSquare,
-      iconBg: 'bg-violet-50',
-      iconColor: 'text-violet-600',
+      iconBg: 'bg-violet-50 dark:bg-violet-900/20',
+      iconColor: 'text-violet-600 dark:text-violet-400',
       accent: 'border-t-violet-400',
       trend: null,
     },
@@ -28,8 +28,8 @@ export default function Dashboard() {
       label: 'Conversas Abertas',
       value: stats?.open ?? 0,
       icon: AlertCircle,
-      iconBg: 'bg-emerald-50',
-      iconColor: 'text-emerald-600',
+      iconBg: 'bg-emerald-50 dark:bg-emerald-900/20',
+      iconColor: 'text-emerald-600 dark:text-emerald-400',
       accent: 'border-t-emerald-400',
       trend: 'ativo',
     },
@@ -37,8 +37,8 @@ export default function Dashboard() {
       label: 'Aguardando',
       value: stats?.waiting ?? 0,
       icon: Clock,
-      iconBg: 'bg-amber-50',
-      iconColor: 'text-amber-600',
+      iconBg: 'bg-amber-50 dark:bg-amber-900/20',
+      iconColor: 'text-amber-600 dark:text-amber-400',
       accent: 'border-t-amber-400',
       trend: null,
     },
@@ -46,8 +46,8 @@ export default function Dashboard() {
       label: 'Finalizadas',
       value: stats?.closed ?? 0,
       icon: CheckCircle,
-      iconBg: 'bg-slate-50',
-      iconColor: 'text-slate-500',
+      iconBg: 'bg-slate-50 dark:bg-slate-800',
+      iconColor: 'text-slate-500 dark:text-slate-400',
       accent: 'border-t-slate-300',
       trend: null,
     },
@@ -75,7 +75,7 @@ export default function Dashboard() {
                 <card.icon size={20} className={card.iconColor} />
               </div>
               {card.trend && (
-                <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-full">
                   <TrendingUp size={9} />
                   {card.trend}
                 </span>
