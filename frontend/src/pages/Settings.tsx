@@ -19,11 +19,11 @@ export default function Settings() {
     <div className="animate-fade-in">
       {/* Page header */}
       <div className="mb-8 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
-          <Settings2 size={20} className="text-slate-600" />
+        <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+          <Settings2 size={20} className="text-slate-600 dark:text-slate-400" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Configurações</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Configurações</h1>
           <p className="text-sm text-slate-500 mt-0.5">Gerencie usuários, setores e o bot</p>
         </div>
       </div>

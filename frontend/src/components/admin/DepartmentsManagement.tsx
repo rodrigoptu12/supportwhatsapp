@@ -68,13 +68,13 @@ export function DepartmentsManagement() {
   };
 
   if (isLoading) {
-    return <div className="text-center py-8 text-gray-500">Carregando setores...</div>;
+    return <div className="text-center py-8 text-slate-500">Carregando setores...</div>;
   }
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <p className="text-sm text-gray-500">{departments.length} setor(es) cadastrado(s)</p>
+        <p className="text-sm text-slate-500">{departments.length} setor(es) cadastrado(s)</p>
         <Button size="sm" onClick={() => setShowCreate(true)} disabled={showCreate}>
           <Plus size={16} className="mr-1" /> Novo Setor
         </Button>
@@ -82,8 +82,8 @@ export function DepartmentsManagement() {
 
       {/* Create form */}
       {showCreate && (
-        <div className="bg-white rounded-lg shadow-sm border p-4 space-y-3">
-          <h3 className="font-medium text-sm">Novo Setor</h3>
+        <div className="bg-white dark:bg-slate-800/40 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-4 space-y-3">
+          <h3 className="font-medium text-sm text-slate-800 dark:text-slate-200">Novo Setor</h3>
           <div className="grid grid-cols-3 gap-3">
             <Input
               placeholder="Nome do setor"
@@ -114,21 +114,21 @@ export function DepartmentsManagement() {
       )}
 
       {/* Departments list */}
-      <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+      <div className="bg-white dark:bg-slate-800/40 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-slate-50 dark:bg-white/[0.03] border-b border-slate-200 dark:border-slate-700">
             <tr>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Ordem</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Nome</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Descricao</th>
-              <th className="text-center px-4 py-3 font-medium text-gray-600">Atendentes</th>
-              <th className="text-center px-4 py-3 font-medium text-gray-600">Status</th>
-              <th className="text-right px-4 py-3 font-medium text-gray-600">Acoes</th>
+              <th className="text-left px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Ordem</th>
+              <th className="text-left px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Nome</th>
+              <th className="text-left px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Descricao</th>
+              <th className="text-center px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Atendentes</th>
+              <th className="text-center px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Status</th>
+              <th className="text-right px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Acoes</th>
             </tr>
           </thead>
-          <tbody className="divide-y">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-700/60">
             {departments.map((dept) => (
-              <tr key={dept.id} className="hover:bg-gray-50">
+              <tr key={dept.id} className="hover:bg-slate-50 dark:hover:bg-white/[0.03]">
                 {editingId === dept.id ? (
                   <>
                     <td className="px-4 py-3">
@@ -152,12 +152,12 @@ export function DepartmentsManagement() {
                       />
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <span className="flex items-center justify-center gap-1 text-gray-500">
+                      <span className="flex items-center justify-center gap-1 text-slate-500">
                         <Users size={14} /> {dept._count?.users ?? 0}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <span className={`px-2 py-0.5 rounded-full text-xs ${dept.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                      <span className={`px-2 py-0.5 rounded-full text-xs ${dept.isActive ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400'}`}>
                         {dept.isActive ? 'Ativo' : 'Inativo'}
                       </span>
                     </td>
@@ -172,18 +172,18 @@ export function DepartmentsManagement() {
                   </>
                 ) : (
                   <>
-                    <td className="px-4 py-3 text-gray-500">{dept.order}</td>
-                    <td className="px-4 py-3 font-medium">{dept.name}</td>
-                    <td className="px-4 py-3 text-gray-500">{dept.description ?? '-'}</td>
+                    <td className="px-4 py-3 text-slate-500">{dept.order}</td>
+                    <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">{dept.name}</td>
+                    <td className="px-4 py-3 text-slate-500">{dept.description ?? '-'}</td>
                     <td className="px-4 py-3 text-center">
-                      <span className="flex items-center justify-center gap-1 text-gray-500">
+                      <span className="flex items-center justify-center gap-1 text-slate-500">
                         <Users size={14} /> {dept._count?.users ?? 0}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-center">
                       <button
                         onClick={() => handleToggleActive(dept)}
-                        className={`px-2 py-0.5 rounded-full text-xs cursor-pointer ${dept.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}
+                        className={`px-2 py-0.5 rounded-full text-xs cursor-pointer ${dept.isActive ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400'}`}
                       >
                         {dept.isActive ? 'Ativo' : 'Inativo'}
                       </button>
@@ -202,7 +202,7 @@ export function DepartmentsManagement() {
             ))}
             {departments.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={6} className="px-4 py-8 text-center text-slate-400">
                   Nenhum setor cadastrado
                 </td>
               </tr>

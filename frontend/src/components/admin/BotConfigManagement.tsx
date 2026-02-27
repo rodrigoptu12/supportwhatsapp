@@ -56,13 +56,13 @@ export function BotConfigManagement() {
   };
 
   if (isLoading) {
-    return <div className="text-center py-8 text-gray-500">Carregando configuracoes...</div>;
+    return <div className="text-center py-8 text-slate-500">Carregando configuracoes...</div>;
   }
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <p className="text-sm text-gray-500">{configs.length} configuracao(oes) do bot</p>
+        <p className="text-sm text-slate-500">{configs.length} configuracao(oes) do bot</p>
         <Button
           size="sm"
           variant={showPreview ? 'default' : 'ghost'}
@@ -74,21 +74,21 @@ export function BotConfigManagement() {
 
       {/* Preview */}
       {showPreview && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 space-y-3">
-          <h3 className="font-medium text-sm text-green-800">Preview do Fluxo do Bot</h3>
+        <div className="bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800/30 rounded-lg p-4 space-y-3">
+          <h3 className="font-medium text-sm text-green-800 dark:text-green-400">Preview do Fluxo do Bot</h3>
           <div className="space-y-2 text-sm">
-            <div className="bg-white rounded-lg p-3 shadow-sm border">
-              <span className="text-xs text-gray-400 block mb-1">1. Boas-vindas + Menu</span>
-              <p className="whitespace-pre-wrap text-gray-700">
+            <div className="bg-white dark:bg-slate-800/50 rounded-lg p-3 shadow-sm border border-slate-200 dark:border-slate-700">
+              <span className="text-xs text-slate-400 block mb-1">1. Boas-vindas + Menu</span>
+              <p className="whitespace-pre-wrap text-slate-700 dark:text-slate-300">
                 {getConfigValue('greeting')}{'\n\n'}
                 {getConfigValue('main_menu_options')}{'\n\n'}
                 {getConfigValue('main_menu_prompt')}
               </p>
             </div>
-            <div className="text-center text-gray-400 text-xs">Usuario digita "1"</div>
-            <div className="bg-white rounded-lg p-3 shadow-sm border">
-              <span className="text-xs text-gray-400 block mb-1">2. Menu de Setores</span>
-              <p className="whitespace-pre-wrap text-gray-700">
+            <div className="text-center text-slate-400 text-xs">Usuario digita "1"</div>
+            <div className="bg-white dark:bg-slate-800/50 rounded-lg p-3 shadow-sm border border-slate-200 dark:border-slate-700">
+              <span className="text-xs text-slate-400 block mb-1">2. Menu de Setores</span>
+              <p className="whitespace-pre-wrap text-slate-700 dark:text-slate-300">
                 {getConfigValue('department_menu_header')}{'\n\n'}
                 1. Secretaria{'\n'}
                 2. Coordenacao{'\n'}
@@ -96,10 +96,10 @@ export function BotConfigManagement() {
                 {getConfigValue('department_menu_prompt')}
               </p>
             </div>
-            <div className="text-center text-gray-400 text-xs">Usuario escolhe um setor</div>
-            <div className="bg-white rounded-lg p-3 shadow-sm border">
-              <span className="text-xs text-gray-400 block mb-1">3. Transferencia</span>
-              <p className="whitespace-pre-wrap text-gray-700">
+            <div className="text-center text-slate-400 text-xs">Usuario escolhe um setor</div>
+            <div className="bg-white dark:bg-slate-800/50 rounded-lg p-3 shadow-sm border border-slate-200 dark:border-slate-700">
+              <span className="text-xs text-slate-400 block mb-1">3. Transferencia</span>
+              <p className="whitespace-pre-wrap text-slate-700 dark:text-slate-300">
                 {getConfigValue('department_transfer').replace('{department}', 'Secretaria')}
               </p>
             </div>
@@ -108,35 +108,35 @@ export function BotConfigManagement() {
       )}
 
       {/* Config list */}
-      <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+      <div className="bg-white dark:bg-slate-800/40 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-slate-50 dark:bg-white/[0.03] border-b border-slate-200 dark:border-slate-700">
             <tr>
-              <th className="text-left px-4 py-3 font-medium text-gray-600 w-40">Chave</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Mensagem</th>
-              <th className="text-right px-4 py-3 font-medium text-gray-600 w-24">Acoes</th>
+              <th className="text-left px-4 py-3 font-medium text-slate-600 dark:text-slate-400 w-40">Chave</th>
+              <th className="text-left px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Mensagem</th>
+              <th className="text-right px-4 py-3 font-medium text-slate-600 dark:text-slate-400 w-24">Acoes</th>
             </tr>
           </thead>
-          <tbody className="divide-y">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-700/60">
             {configs.map((config) => (
-              <tr key={config.key} className="hover:bg-gray-50">
+              <tr key={config.key} className="hover:bg-slate-50 dark:hover:bg-white/[0.03]">
                 <td className="px-4 py-3">
-                  <div className="font-medium text-gray-900">{KEY_LABELS[config.key] ?? config.key}</div>
-                  <div className="text-xs text-gray-400 mt-0.5">{config.key}</div>
+                  <div className="font-medium text-slate-900 dark:text-slate-200">{KEY_LABELS[config.key] ?? config.key}</div>
+                  <div className="text-xs text-slate-400 mt-0.5">{config.key}</div>
                   {config.description && (
-                    <div className="text-xs text-gray-400">{config.description}</div>
+                    <div className="text-xs text-slate-400">{config.description}</div>
                   )}
                 </td>
                 <td className="px-4 py-3">
                   {editingKey === config.key ? (
                     <textarea
-                      className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y min-h-[80px]"
+                      className="w-full border border-slate-200 dark:border-slate-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-y min-h-[80px]"
                       value={editValue}
                       onChange={(e) => setEditValue(e.target.value)}
                       autoFocus
                     />
                   ) : (
-                    <p className="whitespace-pre-wrap text-gray-700">{config.value?.message ?? '-'}</p>
+                    <p className="whitespace-pre-wrap text-slate-700 dark:text-slate-300">{config.value?.message ?? '-'}</p>
                   )}
                 </td>
                 <td className="px-4 py-3 text-right">
@@ -159,7 +159,7 @@ export function BotConfigManagement() {
             ))}
             {configs.length === 0 && (
               <tr>
-                <td colSpan={3} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={3} className="px-4 py-8 text-center text-slate-400">
                   Nenhuma configuracao encontrada. Execute o seed para criar as configuracoes padrao.
                 </td>
               </tr>
@@ -168,8 +168,8 @@ export function BotConfigManagement() {
         </table>
       </div>
 
-      <div className="text-xs text-gray-400">
-        Use <code className="bg-gray-100 px-1 rounded">{'{department}'}</code> na mensagem de transferencia para inserir o nome do setor automaticamente.
+      <div className="text-xs text-slate-400">
+        Use <code className="bg-slate-100 dark:bg-slate-700 dark:text-slate-300 px-1 rounded">{'{department}'}</code> na mensagem de transferencia para inserir o nome do setor automaticamente.
       </div>
     </div>
   );

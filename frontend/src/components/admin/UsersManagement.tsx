@@ -69,9 +69,9 @@ export function UsersManagement() {
 
   const getRoleBadge = (role: string) => {
     const styles: Record<string, string> = {
-      admin: 'bg-purple-100 text-purple-700',
-      supervisor: 'bg-blue-100 text-blue-700',
-      attendant: 'bg-gray-100 text-gray-700',
+      admin: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400',
+      supervisor: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
+      attendant: 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300',
     };
     const labels: Record<string, string> = {
       admin: 'Admin',
@@ -86,32 +86,32 @@ export function UsersManagement() {
   };
 
   if (usersLoading) {
-    return <div className="text-center py-8 text-gray-500">Carregando usuarios...</div>;
+    return <div className="text-center py-8 text-slate-500">Carregando usuarios...</div>;
   }
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-gray-500">{users.length} usuario(s)</p>
+      <p className="text-sm text-slate-500">{users.length} usuario(s)</p>
 
-      <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+      <div className="bg-white dark:bg-slate-800/40 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-slate-50 dark:bg-white/[0.03] border-b border-slate-200 dark:border-slate-700">
             <tr>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Nome</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Email</th>
-              <th className="text-center px-4 py-3 font-medium text-gray-600">Perfil</th>
-              <th className="text-center px-4 py-3 font-medium text-gray-600">Status</th>
-              <th className="text-right px-4 py-3 font-medium text-gray-600">Setores</th>
+              <th className="text-left px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Nome</th>
+              <th className="text-left px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Email</th>
+              <th className="text-center px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Perfil</th>
+              <th className="text-center px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Status</th>
+              <th className="text-right px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Setores</th>
             </tr>
           </thead>
-          <tbody className="divide-y">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-700/60">
             {users.map((user) => (
-              <tr key={user.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 font-medium">{user.fullName}</td>
-                <td className="px-4 py-3 text-gray-500">{user.email}</td>
+              <tr key={user.id} className="hover:bg-slate-50 dark:hover:bg-white/[0.03]">
+                <td className="px-4 py-3 font-medium text-slate-800 dark:text-slate-200">{user.fullName}</td>
+                <td className="px-4 py-3 text-slate-500 dark:text-slate-400">{user.email}</td>
                 <td className="px-4 py-3 text-center">{getRoleBadge(user.role)}</td>
                 <td className="px-4 py-3 text-center">
-                  <span className={`px-2 py-0.5 rounded-full text-xs ${user.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
+                  <span className={`px-2 py-0.5 rounded-full text-xs ${user.isActive ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'}`}>
                     {user.isActive ? 'Ativo' : 'Inativo'}
                   </span>
                 </td>
@@ -164,20 +164,20 @@ function DepartmentModal({
 }) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
-        <div className="flex items-center justify-between p-4 border-b">
+      <div className="bg-white dark:bg-[#0f1929] rounded-lg shadow-xl w-full max-w-md mx-4 border border-slate-200 dark:border-slate-700">
+        <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
           <div>
-            <h3 className="font-semibold">Setores de {user.fullName}</h3>
-            <p className="text-xs text-gray-500">{user.email}</p>
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100">Setores de {user.fullName}</h3>
+            <p className="text-xs text-slate-500">{user.email}</p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
             <X size={20} />
           </button>
         </div>
 
         <div className="p-4">
           {isLoading ? (
-            <p className="text-center text-gray-500 py-4">Carregando...</p>
+            <p className="text-center text-slate-500 py-4">Carregando...</p>
           ) : (
             <div className="space-y-2">
               {departments.map((dept) => {
@@ -188,28 +188,28 @@ function DepartmentModal({
                     onClick={() => onToggle(dept.id)}
                     className={`w-full flex items-center justify-between p-3 rounded-lg border transition-colors text-left ${
                       isSelected
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                        : 'border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500'
                     }`}
                   >
                     <div>
-                      <p className="font-medium text-sm">{dept.name}</p>
+                      <p className="font-medium text-sm text-slate-800 dark:text-slate-200">{dept.name}</p>
                       {dept.description && (
-                        <p className="text-xs text-gray-500">{dept.description}</p>
+                        <p className="text-xs text-slate-500">{dept.description}</p>
                       )}
                     </div>
-                    {isSelected && <Check size={18} className="text-blue-600" />}
+                    {isSelected && <Check size={18} className="text-blue-600 dark:text-blue-400" />}
                   </button>
                 );
               })}
               {departments.length === 0 && (
-                <p className="text-center text-gray-400 py-4">Nenhum setor cadastrado</p>
+                <p className="text-center text-slate-400 py-4">Nenhum setor cadastrado</p>
               )}
             </div>
           )}
         </div>
 
-        <div className="flex justify-end gap-2 p-4 border-t">
+        <div className="flex justify-end gap-2 p-4 border-t border-slate-200 dark:border-slate-700">
           <Button size="sm" variant="ghost" onClick={onClose}>Cancelar</Button>
           <Button size="sm" onClick={onSave} disabled={isSaving || isLoading}>
             {isSaving ? 'Salvando...' : 'Salvar'}
