@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { massMessageService, MassMessageResult, MassMessageHistoryEntry, TemplateVarMapping } from '../services/mass-message.service';
 import { socketService } from '../services/socket.service';
+import { useTheme } from '../contexts/ThemeContext';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -216,19 +217,13 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div
-      className="rounded-xl p-4 flex items-center gap-3"
-      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
-    >
-      <div
-        className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-        style={{ background: `${color}20` }}
-      >
+    <div className="rounded-xl p-4 flex items-center gap-3 bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.07]">
+      <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: `${color}20` }}>
         <Icon size={16} style={{ color }} />
       </div>
       <div>
         <p className="text-xs text-slate-500 font-medium">{label}</p>
-        <p className="text-lg font-bold text-white leading-tight">{value}</p>
+        <p className="text-lg font-bold text-slate-900 dark:text-white leading-tight">{value}</p>
       </div>
     </div>
   );
@@ -237,6 +232,8 @@ function StatCard({
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function MassMessage() {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const uid = useId();
@@ -470,33 +467,24 @@ export default function MassMessage() {
     validStudents.some((s) => selected.has(s.id)) && !allValidSelected;
 
   return (
-    <div
-      className="flex flex-col h-full overflow-y-auto"
-      style={{ background: '#0B1120', color: '#e2e8f0' }}
-    >
+    <div className="flex flex-col h-full overflow-y-auto bg-white dark:bg-[#0B1120] text-slate-800 dark:text-slate-200">
       {/* ── Header ── */}
-      <div
-        className="shrink-0 px-6 py-5 flex items-center justify-between"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
-      >
+      <div className="shrink-0 px-6 py-5 flex items-center justify-between border-b border-slate-200 dark:border-white/[0.06]">
         <div className="flex items-center gap-3">
           <div
             className="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg"
-            style={{
-              background: 'linear-gradient(135deg, #10b981, #059669)',
-              boxShadow: '0 0 20px rgba(16,185,129,0.3)',
-            }}
+            style={{ background: 'linear-gradient(135deg, #10b981, #059669)', boxShadow: '0 0 20px rgba(16,185,129,0.3)' }}
           >
             <Zap size={16} className="text-white" />
           </div>
           <div>
-            <h1 className="text-sm font-bold text-white tracking-wide">Envio em Massa</h1>
+            <h1 className="text-sm font-bold text-slate-900 dark:text-white tracking-wide">Envio em Massa</h1>
             <p className="text-[11px] text-slate-500">WhatsApp · Alunos</p>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+        <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.07]">
           {(['send', 'history'] as const).map((tab) => {
             const labels = { send: 'Novo Envio', history: `Histórico${history.length ? ` (${history.length})` : ''}` };
             const active = activeTab === tab;
@@ -507,7 +495,7 @@ export default function MassMessage() {
                 className="px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all duration-150"
                 style={{
                   background: active ? 'rgba(16,185,129,0.15)' : 'transparent',
-                  color: active ? '#34d399' : '#475569',
+                  color: active ? '#34d399' : '#64748b',
                   border: active ? '1px solid rgba(16,185,129,0.3)' : '1px solid transparent',
                 }}
               >
@@ -534,28 +522,21 @@ export default function MassMessage() {
                 {i > 0 && (
                   <div
                     className="w-6 h-px"
-                    style={{ background: done ? '#10b981' : 'rgba(255,255,255,0.1)' }}
+                    style={{ background: done ? '#10b981' : (isDark ? 'rgba(255,255,255,0.1)' : '#e2e8f0') }}
                   />
                 )}
                 <div className="flex items-center gap-1">
                   <div
                     className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300"
                     style={{
-                      background: done
-                        ? '#10b981'
-                        : active
-                        ? 'rgba(16,185,129,0.2)'
-                        : 'rgba(255,255,255,0.06)',
-                      border: active ? '1px solid #10b981' : '1px solid transparent',
+                      background: done ? '#10b981' : active ? 'rgba(16,185,129,0.2)' : (isDark ? 'rgba(255,255,255,0.06)' : '#f1f5f9'),
+                      border: active ? '1px solid #10b981' : (isDark ? '1px solid transparent' : '1px solid #e2e8f0'),
                       color: done ? 'white' : active ? '#10b981' : '#64748b',
                     }}
                   >
                     {done ? '✓' : i + 1}
                   </div>
-                  <span
-                    className="text-[11px] font-medium"
-                    style={{ color: active ? '#e2e8f0' : '#475569' }}
-                  >
+                  <span className="text-[11px] font-medium" style={{ color: active ? (isDark ? '#e2e8f0' : '#1e293b') : '#64748b' }}>
                     {labels[thisIdx]}
                   </span>
                 </div>
@@ -593,34 +574,23 @@ export default function MassMessage() {
               onClick={() => fileInputRef.current?.click()}
               className="relative rounded-2xl cursor-pointer transition-all duration-300 flex flex-col items-center justify-center gap-4 py-16 px-8"
               style={{
-                border: isDragging
-                  ? '2px dashed #10b981'
-                  : '2px dashed rgba(255,255,255,0.1)',
-                background: isDragging
-                  ? 'rgba(16,185,129,0.05)'
-                  : 'rgba(255,255,255,0.02)',
+                border: isDragging ? '2px dashed #10b981' : (isDark ? '2px dashed rgba(255,255,255,0.1)' : '2px dashed #e2e8f0'),
+                background: isDragging ? 'rgba(16,185,129,0.05)' : (isDark ? 'rgba(255,255,255,0.02)' : '#f8fafc'),
                 boxShadow: isDragging ? '0 0 40px rgba(16,185,129,0.1) inset' : 'none',
               }}
             >
               <div
                 className="w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300"
                 style={{
-                  background: isDragging
-                    ? 'rgba(16,185,129,0.2)'
-                    : 'rgba(255,255,255,0.05)',
-                  border: isDragging
-                    ? '1px solid rgba(16,185,129,0.4)'
-                    : '1px solid rgba(255,255,255,0.08)',
+                  background: isDragging ? 'rgba(16,185,129,0.2)' : (isDark ? 'rgba(255,255,255,0.05)' : '#f1f5f9'),
+                  border: isDragging ? '1px solid rgba(16,185,129,0.4)' : (isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #e2e8f0'),
                 }}
               >
-                <FileSpreadsheet
-                  size={28}
-                  style={{ color: isDragging ? '#10b981' : '#475569' }}
-                />
+                <FileSpreadsheet size={28} style={{ color: isDragging ? '#10b981' : '#64748b' }} />
               </div>
 
               <div className="text-center">
-                <p className="text-sm font-semibold text-white mb-1">
+                <p className="text-sm font-semibold text-slate-900 dark:text-white mb-1">
                   {isDragging ? 'Solte o arquivo aqui' : 'Arraste sua planilha ou clique para selecionar'}
                 </p>
                 <p className="text-xs text-slate-500">Formatos aceitos: .xls, .xlsx, .csv</p>
@@ -628,11 +598,7 @@ export default function MassMessage() {
 
               <div
                 className="px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-150"
-                style={{
-                  background: 'rgba(16,185,129,0.15)',
-                  color: '#34d399',
-                  border: '1px solid rgba(16,185,129,0.3)',
-                }}
+                style={{ background: 'rgba(16,185,129,0.15)', color: '#34d399', border: '1px solid rgba(16,185,129,0.3)' }}
               >
                 Selecionar arquivo
               </div>
@@ -648,11 +614,8 @@ export default function MassMessage() {
             </div>
 
             {/* Column reference */}
-            <div
-              className="rounded-xl p-4"
-              style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}
-            >
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">
+            <div className="rounded-xl p-4 bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06]">
+              <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-3">
                 Colunas reconhecidas automaticamente
               </p>
 
@@ -673,12 +636,12 @@ export default function MassMessage() {
                     >
                       {field}
                     </span>
-                    <span className="text-[10px] text-slate-600 leading-relaxed">{accepts}</span>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-600 leading-relaxed">{accepts}</span>
                   </div>
                 ))}
               </div>
 
-              <p className="text-[10px] text-slate-600 mt-2">
+              <p className="text-[10px] text-slate-400 dark:text-slate-600 mt-2">
                 A detecção ignora maiúsculas, minúsculas, acentos e pontuação — funciona mesmo após salvar no Excel.
                 Aceita .xls, .xlsx e .csv.
               </p>
@@ -735,9 +698,9 @@ export default function MassMessage() {
                       onClick={() => setShowInvalid((v) => !v)}
                       className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-lg transition-all duration-150"
                       style={{
-                        background: showInvalid ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.04)',
+                        background: showInvalid ? 'rgba(245,158,11,0.15)' : (isDark ? 'rgba(255,255,255,0.04)' : '#f1f5f9'),
                         color: showInvalid ? '#fbbf24' : '#64748b',
-                        border: showInvalid ? '1px solid rgba(245,158,11,0.3)' : '1px solid rgba(255,255,255,0.06)',
+                        border: showInvalid ? '1px solid rgba(245,158,11,0.3)' : (isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid #e2e8f0'),
                       }}
                     >
                       {showInvalid ? <EyeOff size={11} /> : <Eye size={11} />}
@@ -748,9 +711,9 @@ export default function MassMessage() {
                     onClick={handleReset}
                     className="flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-lg transition-all duration-150"
                     style={{
-                      background: 'rgba(255,255,255,0.04)',
+                      background: isDark ? 'rgba(255,255,255,0.04)' : '#f1f5f9',
                       color: '#64748b',
-                      border: '1px solid rgba(255,255,255,0.06)',
+                      border: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid #e2e8f0',
                     }}
                   >
                     <RefreshCw size={11} />
@@ -760,19 +723,11 @@ export default function MassMessage() {
               </div>
 
               {/* Table */}
-              <div
-                className="flex-1 rounded-xl overflow-hidden flex flex-col"
-                style={{ border: '1px solid rgba(255,255,255,0.07)' }}
-              >
+              <div className="flex-1 rounded-xl overflow-hidden flex flex-col border border-slate-200 dark:border-white/[0.07]">
                 {/* Table header */}
                 <div
-                  className="grid items-center px-4 py-3 gap-3 text-[10px] font-bold uppercase tracking-widest shrink-0"
-                  style={{
-                    gridTemplateColumns: '32px 80px 1fr 100px 140px 90px',
-                    background: 'rgba(255,255,255,0.03)',
-                    borderBottom: '1px solid rgba(255,255,255,0.06)',
-                    color: '#475569',
-                  }}
+                  className="grid items-center px-4 py-3 gap-3 text-[10px] font-bold uppercase tracking-widest shrink-0 bg-slate-50 dark:bg-white/[0.03] border-b border-slate-200 dark:border-white/[0.06] text-slate-500"
+                  style={{ gridTemplateColumns: '32px 80px 1fr 100px 140px 90px' }}
                 >
                   <button
                     onClick={toggleSelectAll}
@@ -812,9 +767,9 @@ export default function MassMessage() {
                           background: isPreview
                             ? 'rgba(16,185,129,0.07)'
                             : isSelected
-                            ? 'rgba(255,255,255,0.025)'
+                            ? (isDark ? 'rgba(255,255,255,0.025)' : '#f8fafc')
                             : 'transparent',
-                          borderBottom: '1px solid rgba(255,255,255,0.04)',
+                          borderBottom: isDark ? '1px solid rgba(255,255,255,0.04)' : '1px solid #f1f5f9',
                           opacity: student.phoneValid ? 1 : 0.5,
                         }}
                         onMouseEnter={() => student.phoneValid && setPreviewStudent(student)}
@@ -840,7 +795,7 @@ export default function MassMessage() {
                         <span className="text-[11px] font-mono text-slate-400 truncate">{student.rm || '—'}</span>
 
                         {/* Name */}
-                        <span className="text-xs font-medium text-slate-200 truncate">{student.name || '—'}</span>
+                        <span className="text-xs font-medium text-slate-700 dark:text-slate-200 truncate">{student.name || '—'}</span>
 
                         {/* Turma */}
                         <span
@@ -869,7 +824,7 @@ export default function MassMessage() {
                               ? 'rgba(16,185,129,0.12)'
                               : student.status.toLowerCase().includes('cancel')
                               ? 'rgba(239,68,68,0.12)'
-                              : 'rgba(255,255,255,0.05)',
+                              : isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
                             color: student.status.toLowerCase().includes('ativ')
                               ? '#34d399'
                               : student.status.toLowerCase().includes('cancel')
@@ -888,10 +843,7 @@ export default function MassMessage() {
 
             {/* Right: Message composer */}
             <div className="flex flex-col gap-4">
-              <div
-                className="rounded-xl p-5 flex flex-col gap-4 flex-1"
-                style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)' }}
-              >
+              <div className="rounded-xl p-5 flex flex-col gap-4 flex-1 bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.07]">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     {activeTemplate ? (
@@ -899,7 +851,7 @@ export default function MassMessage() {
                     ) : (
                       <MessageSquare size={14} className="text-emerald-400" />
                     )}
-                    <span className="text-xs font-bold text-white uppercase tracking-widest">
+                    <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-widest">
                       {activeTemplate ? 'Template Ativo' : 'Mensagem'}
                     </span>
                   </div>
@@ -953,19 +905,13 @@ export default function MassMessage() {
                               >
                                 {`{{${idx}}}`}
                               </span>
-                              <span className="text-slate-600 text-xs shrink-0">→</span>
+                              <span className="text-slate-400 dark:text-slate-600 text-xs shrink-0">→</span>
                               <select
                                 value={variableMapping[idx] ?? 'name'}
                                 onChange={(e) =>
                                   setVariableMapping((prev) => ({ ...prev, [idx]: e.target.value }))
                                 }
-                                className="flex-1 rounded-lg px-2 py-1.5 text-xs outline-none appearance-none"
-                                style={{
-                                  background: 'rgba(255,255,255,0.05)',
-                                  border: '1px solid rgba(255,255,255,0.08)',
-                                  color: '#e2e8f0',
-                                  cursor: 'pointer',
-                                }}
+                                className="flex-1 rounded-lg px-2 py-1.5 text-xs outline-none appearance-none bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] text-slate-800 dark:text-slate-200 cursor-pointer"
                               >
                                 {STUDENT_FIELDS.map((f) => (
                                   <option key={f.key} value={f.key}>
@@ -988,7 +934,7 @@ export default function MassMessage() {
                         <p className="text-[10px] text-violet-400 font-bold uppercase tracking-widest mb-2">
                           Preview · {previewStudent.name}
                         </p>
-                        <p className="text-xs text-slate-300 whitespace-pre-wrap leading-relaxed">
+                        <p className="text-xs text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
                           {activeTemplate.body.replace(/\{\{(\d+)\}\}/g, (_m, idx) => {
                             const field = variableMapping[Number(idx)];
                             return field
@@ -1024,19 +970,13 @@ export default function MassMessage() {
                         onChange={(e) => setMessage(e.target.value)}
                         placeholder={`Olá {nome}! 👋\n\nInformamos que sua turma {turma} tem uma novidade importante...\n\nAtt,\nEquipe Suporte`}
                         rows={9}
-                        className="flex-1 resize-none rounded-xl text-sm leading-relaxed outline-none transition-all duration-150 placeholder:text-slate-600"
-                        style={{
-                          background: 'rgba(255,255,255,0.03)',
-                          border: '1px solid rgba(255,255,255,0.08)',
-                          color: '#e2e8f0',
-                          padding: '12px 14px',
-                          fontFamily: 'inherit',
-                        }}
-                        onFocus={(e) => { e.currentTarget.style.border = '1px solid rgba(16,185,129,0.4)'; }}
-                        onBlur={(e) => { e.currentTarget.style.border = '1px solid rgba(255,255,255,0.08)'; }}
+                        className="flex-1 resize-none rounded-xl text-sm leading-relaxed outline-none transition-all duration-150 placeholder:text-slate-400 dark:placeholder:text-slate-600 bg-slate-100 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] text-slate-800 dark:text-slate-200"
+                        style={{ padding: '12px 14px', fontFamily: 'inherit' }}
+                        onFocus={(e) => { e.currentTarget.style.border = isDark ? '1px solid rgba(16,185,129,0.4)' : '1px solid #6ee7b7'; }}
+                        onBlur={(e) => { e.currentTarget.style.border = isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid #e2e8f0'; }}
                       />
                       <div className="flex justify-between items-center">
-                        <span className="text-[10px] text-slate-600">{message.length} caracteres</span>
+                        <span className="text-[10px] text-slate-400 dark:text-slate-600">{message.length} caracteres</span>
                         {message.length > 1000 && (
                           <span className="text-[10px] text-amber-400 flex items-center gap-1">
                             <AlertTriangle size={10} /> Mensagem longa
@@ -1054,14 +994,14 @@ export default function MassMessage() {
                         <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mb-2">
                           Preview · {previewStudent.name}
                         </p>
-                        <p className="text-xs text-slate-300 whitespace-pre-wrap leading-relaxed">
+                        <p className="text-xs text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
                           {interpolatePreview(message, previewStudent)}
                         </p>
                       </div>
                     )}
 
                     {!previewStudent && (
-                      <p className="text-[10px] text-slate-600 text-center">
+                      <p className="text-[10px] text-slate-400 dark:text-slate-600 text-center">
                         Passe o mouse sobre um aluno para pré-visualizar a mensagem
                       </p>
                     )}
@@ -1073,29 +1013,19 @@ export default function MassMessage() {
               <button
                 disabled={selectedStudents.length === 0 || (!activeTemplate && !message.trim())}
                 onClick={() => setConfirmOpen(true)}
-                className="w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200"
-                style={{
-                  background:
-                    selectedStudents.length === 0 || (!activeTemplate && !message.trim())
-                      ? 'rgba(255,255,255,0.05)'
-                      : activeTemplate
-                      ? 'linear-gradient(135deg, #8b5cf6, #6d28d9)'
-                      : 'linear-gradient(135deg, #10b981, #059669)',
-                  color:
-                    selectedStudents.length === 0 || (!activeTemplate && !message.trim())
-                      ? '#334155'
-                      : 'white',
-                  boxShadow:
-                    selectedStudents.length > 0 && (activeTemplate || message.trim())
-                      ? activeTemplate
-                        ? '0 4px 20px rgba(139,92,246,0.35)'
-                        : '0 4px 20px rgba(16,185,129,0.35)'
-                      : 'none',
-                  cursor:
-                    selectedStudents.length === 0 || (!activeTemplate && !message.trim())
-                      ? 'not-allowed'
-                      : 'pointer',
-                }}
+                className={`w-full py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-200 ${
+                  selectedStudents.length === 0 || (!activeTemplate && !message.trim())
+                    ? 'bg-slate-100 dark:bg-white/[0.05] text-slate-400 dark:text-slate-600 cursor-not-allowed'
+                    : 'text-white cursor-pointer'
+                }`}
+                style={
+                  selectedStudents.length > 0 && (activeTemplate || message.trim())
+                    ? {
+                        background: activeTemplate ? 'linear-gradient(135deg, #8b5cf6, #6d28d9)' : 'linear-gradient(135deg, #10b981, #059669)',
+                        boxShadow: activeTemplate ? '0 4px 20px rgba(139,92,246,0.35)' : '0 4px 20px rgba(16,185,129,0.35)',
+                      }
+                    : undefined
+                }
               >
                 <Send size={15} />
                 Enviar para {selectedStudents.length} aluno{selectedStudents.length !== 1 ? 's' : ''}
@@ -1122,7 +1052,7 @@ export default function MassMessage() {
               />
             </div>
             <div className="text-center">
-              <p className="text-base font-bold text-white mb-1">Enviando mensagens...</p>
+              <p className="text-base font-bold text-slate-900 dark:text-white mb-1">Enviando mensagens...</p>
               {sendProgress ? (
                 <p className="text-2xl font-bold tabular-nums" style={{ color: '#34d399' }}>
                   {sendProgress.sent}
@@ -1137,7 +1067,7 @@ export default function MassMessage() {
                 Isso pode levar alguns minutos para evitar bloqueios
               </p>
             </div>
-            <div className="w-64 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+            <div className="w-64 h-1.5 rounded-full overflow-hidden bg-slate-200 dark:bg-white/[0.06]">
               <div
                 className="h-full rounded-full transition-all duration-500"
                 style={{
@@ -1178,7 +1108,7 @@ export default function MassMessage() {
                   {sendResults.successCount}/{sendResults.total}
                 </span>
               </div>
-              <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+              <div className="h-2 rounded-full overflow-hidden bg-slate-200 dark:bg-white/[0.06]">
                 <div
                   className="h-full rounded-full transition-all duration-1000"
                   style={{
@@ -1190,18 +1120,10 @@ export default function MassMessage() {
             </div>
 
             {/* Results table */}
-            <div
-              className="rounded-xl overflow-hidden"
-              style={{ border: '1px solid rgba(255,255,255,0.07)' }}
-            >
+            <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-white/[0.07]">
               <div
-                className="grid px-4 py-3 text-[10px] font-bold uppercase tracking-widest"
-                style={{
-                  gridTemplateColumns: '28px 1fr 160px 1fr',
-                  background: 'rgba(255,255,255,0.03)',
-                  borderBottom: '1px solid rgba(255,255,255,0.06)',
-                  color: '#475569',
-                }}
+                className="grid px-4 py-3 text-[10px] font-bold uppercase tracking-widest bg-slate-50 dark:bg-white/[0.03] border-b border-slate-200 dark:border-white/[0.06] text-slate-500"
+                style={{ gridTemplateColumns: '28px 1fr 160px 1fr' }}
               >
                 <span />
                 <span>Aluno</span>
@@ -1216,10 +1138,10 @@ export default function MassMessage() {
                     className="grid px-4 py-2.5 items-center gap-3 cursor-pointer transition-colors duration-150"
                     style={{
                       gridTemplateColumns: '28px 1fr 160px 1fr',
-                      borderBottom: '1px solid rgba(255,255,255,0.04)',
+                      borderBottom: isDark ? '1px solid rgba(255,255,255,0.04)' : '1px solid #f1f5f9',
                       background:
                         expandedResult === String(i)
-                          ? 'rgba(255,255,255,0.03)'
+                          ? (isDark ? 'rgba(255,255,255,0.03)' : '#f8fafc')
                           : 'transparent',
                     }}
                     onClick={() =>
@@ -1233,7 +1155,7 @@ export default function MassMessage() {
                         <XCircle size={14} style={{ color: '#ef4444' }} />
                       )}
                     </div>
-                    <span className="text-xs font-medium text-slate-200 truncate">
+                    <span className="text-xs font-medium text-slate-700 dark:text-slate-200 truncate">
                       {r.name || '—'}
                     </span>
                     <span className="text-[11px] font-mono text-slate-400 truncate">{r.phone}</span>
@@ -1252,12 +1174,7 @@ export default function MassMessage() {
             <div className="flex gap-3 justify-end">
               <button
                 onClick={handleReset}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150"
-                style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  color: '#94a3b8',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                }}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 text-slate-500 bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] hover:bg-slate-200 dark:hover:bg-white/[0.08]"
               >
                 <RefreshCw size={14} />
                 Novo envio
@@ -1273,11 +1190,11 @@ export default function MassMessage() {
         {activeTab === 'history' && (
           <div className="max-w-3xl mx-auto w-full space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-white">Histórico de Envios</h2>
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white">Histórico de Envios</h2>
               <button
                 onClick={fetchHistory}
                 disabled={historyLoading}
-                className="flex items-center gap-1.5 text-[11px] text-slate-500 hover:text-slate-300 transition-colors"
+                className="flex items-center gap-1.5 text-[11px] text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
               >
                 <RefreshCw size={11} className={historyLoading ? 'animate-spin' : ''} />
                 Atualizar
@@ -1289,27 +1206,16 @@ export default function MassMessage() {
                 <RefreshCw size={20} className="animate-spin text-slate-600" />
               </div>
             ) : history.length === 0 ? (
-              <div
-                className="rounded-xl py-16 flex flex-col items-center gap-3"
-                style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}
-              >
-                <BarChart3 size={32} className="text-slate-700" />
+              <div className="rounded-xl py-16 flex flex-col items-center gap-3 bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06]">
+                <BarChart3 size={32} className="text-slate-400 dark:text-slate-700" />
                 <p className="text-sm text-slate-500">Nenhum envio realizado ainda</p>
-                <p className="text-[11px] text-slate-700">Os envios aparecerão aqui após a conclusão</p>
+                <p className="text-[11px] text-slate-400 dark:text-slate-700">Os envios aparecerão aqui após a conclusão</p>
               </div>
             ) : (
-              <div
-                className="rounded-xl overflow-hidden"
-                style={{ border: '1px solid rgba(255,255,255,0.07)' }}
-              >
+              <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-white/[0.07]">
                 <div
-                  className="grid px-4 py-3 text-[10px] font-bold uppercase tracking-widest"
-                  style={{
-                    gridTemplateColumns: '1fr 120px 80px 80px 80px 110px',
-                    background: 'rgba(255,255,255,0.03)',
-                    borderBottom: '1px solid rgba(255,255,255,0.06)',
-                    color: '#475569',
-                  }}
+                  className="grid px-4 py-3 text-[10px] font-bold uppercase tracking-widest bg-slate-50 dark:bg-white/[0.03] border-b border-slate-200 dark:border-white/[0.06] text-slate-500"
+                  style={{ gridTemplateColumns: '1fr 120px 80px 80px 80px 110px' }}
                 >
                   <span>Mensagem / Template</span>
                   <span>Enviado por</span>
@@ -1328,7 +1234,7 @@ export default function MassMessage() {
                       className="grid px-4 py-3 items-center gap-3"
                       style={{
                         gridTemplateColumns: '1fr 120px 80px 80px 80px 110px',
-                        borderBottom: '1px solid rgba(255,255,255,0.04)',
+                        borderBottom: isDark ? '1px solid rgba(255,255,255,0.04)' : '1px solid #f1f5f9',
                       }}
                     >
                       <div className="flex items-center gap-2 min-w-0">
@@ -1337,12 +1243,12 @@ export default function MassMessage() {
                         ) : (
                           <MessageSquare size={12} className="text-emerald-400 shrink-0" />
                         )}
-                        <span className="text-xs text-slate-300 truncate font-medium" title={entry.label}>
+                        <span className="text-xs text-slate-700 dark:text-slate-300 truncate font-medium" title={entry.label}>
                           {entry.label}
                         </span>
                       </div>
                       <span className="text-[11px] text-slate-400 truncate">{entry.user.fullName}</span>
-                      <span className="text-xs font-bold text-white tabular-nums">{entry.total}</span>
+                      <span className="text-xs font-bold text-slate-900 dark:text-white tabular-nums">{entry.total}</span>
                       <span className="text-xs font-bold tabular-nums" style={{ color: '#34d399' }}>{entry.successCount}</span>
                       <span
                         className="text-xs font-bold tabular-nums"
@@ -1374,8 +1280,8 @@ export default function MassMessage() {
           <div
             className="rounded-2xl p-6 w-full max-w-md"
             style={{
-              background: '#0f1929',
-              border: '1px solid rgba(255,255,255,0.1)',
+              background: isDark ? '#0f1929' : 'white',
+              border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #e2e8f0',
               boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
             }}
           >
@@ -1388,7 +1294,7 @@ export default function MassMessage() {
                   <Send size={18} style={{ color: '#10b981' }} />
                 </div>
                 <div>
-                  <h2 className="text-sm font-bold text-white">Confirmar envio</h2>
+                  <h2 className="text-sm font-bold text-slate-900 dark:text-white">Confirmar envio</h2>
                   <p className="text-xs text-slate-500">Esta ação não pode ser desfeita</p>
                 </div>
               </div>
@@ -1402,16 +1308,19 @@ export default function MassMessage() {
 
             <div
               className="rounded-xl p-4 mb-5"
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}
+              style={{
+                background: isDark ? 'rgba(255,255,255,0.03)' : '#f8fafc',
+                border: isDark ? '1px solid rgba(255,255,255,0.07)' : '1px solid #e2e8f0',
+              }}
             >
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-0.5">Destinatários</p>
-                  <p className="text-2xl font-bold text-white">{selectedStudents.length}</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white">{selectedStudents.length}</p>
                 </div>
                 <div>
                   <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-0.5">Caracteres</p>
-                  <p className="text-2xl font-bold text-white">{message.length}</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-white">{message.length}</p>
                 </div>
               </div>
             </div>
@@ -1436,12 +1345,7 @@ export default function MassMessage() {
             <div className="flex gap-3">
               <button
                 onClick={() => setConfirmOpen(false)}
-                className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150"
-                style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  color: '#94a3b8',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                }}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 text-slate-500 bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] hover:bg-slate-200 dark:hover:bg-white/[0.08]"
               >
                 Cancelar
               </button>
