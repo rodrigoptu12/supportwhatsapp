@@ -98,17 +98,32 @@
   font-size: 0.875rem;
   font-weight: 500;
   transition: all 0.15s ease;
-  color: rgb(148 163 184);
+  color: rgb(100 116 139); /* slate-500 — light mode default */
   text-decoration: none;
 }
 
 .sidebar-nav-item:hover {
-  color: rgb(226 232 240);
-  background: rgba(255, 255, 255, 0.06);
+  color: rgb(15 23 42); /* slate-900 */
+  background: rgb(241 245 249); /* slate-100 */
 }
 
 .sidebar-nav-item.active {
-  color: rgb(52 211 153);
+  color: rgb(5 150 105); /* emerald-600 */
+  background: rgba(16, 185, 129, 0.1);
+}
+
+/* Dark mode overrides */
+.dark .sidebar-nav-item {
+  color: rgb(148 163 184); /* slate-400 */
+}
+
+.dark .sidebar-nav-item:hover {
+  color: rgb(226 232 240); /* slate-200 */
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.dark .sidebar-nav-item.active {
+  color: rgb(52 211 153); /* emerald-400 */
   background: rgba(16, 185, 129, 0.1);
 }
 
